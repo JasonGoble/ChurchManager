@@ -29,6 +29,28 @@
       "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" }
     },
     {
+      "label": "pre-launch: full stack",
+      "dependsOn": ["build: api", "start: mailpit"],
+      "dependsOrder": "parallel",
+      "group": "build"
+    },
+    {
+      "label": "start: mailpit",
+      "type": "shell",
+      "command": "mailpit",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "mailpit",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "accessible via"
+        }
+      },
+      "presentation": { "reveal": "silent", "panel": "dedicated", "group": "servers" }
+    },
+    {
       "label": "serve: angular",
       "type": "shell",
       "command": "npm run start",

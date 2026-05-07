@@ -37,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IOrganizationHierarchyService, OrganizationHierarchyService>();
         services.AddScoped<IUserLinkingService, UserLinkingService>();
+        services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
         services.AddScoped<IEmailService, SmtpEmailService>();
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<IGoogleWorkspaceService, GoogleWorkspaceService>();
