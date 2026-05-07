@@ -6,12 +6,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MemberService } from '../../../core/services/member.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Member, MemberStatus } from '../../../core/models/member.models';
+import { LinkUserDialogComponent, LinkUserDialogData } from '../link-user.dialog';
+import { UserSummary } from '../../../core/models/api.models';
 
 @Component({
   selector: 'app-member-detail',
@@ -147,6 +149,7 @@ export class MemberDetailComponent implements OnInit {
   private memberService = inject(MemberService);
   private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   member = signal<Member | null>(null);
   loading = signal(false);
@@ -180,14 +183,19 @@ export class MemberDetailComponent implements OnInit {
   }
 
   linkUser(m: Member) {
-    const userId = prompt('Enter the User ID to link:');
-    if (!userId?.trim()) return;
-    this.memberService.linkUser(m.id, userId.trim()).subscribe({
-      next: () => {
-        this.snackBar.open('User linked successfully', 'OK', { duration: 3000 });
-        this.reload();
-      },
-      error: (err) => this.snackBar.open(err.error?.title ?? 'Failed to link user', 'OK', { duration: 4000 })
+    const ref = this.dialog.open(LinkUserDialogComponent, {
+      width: '480px',
+      data: { memberName: `${m.firstName} ${m.lastName}`, memberEmail: m.email } satisfies LinkUserDialogData
+    });
+    ref.afterClosed().subscribe((user: UserSummary | undefined) => {
+      if (!user) return;
+      this.memberService.linkUser(m.id, user.id).subscribe({
+        next: () => {
+          this.snackBar.open('User linked successfully', 'OK', { duration: 3000 });
+          this.reload();
+        },
+        error: (err) => this.snackBar.open(err.error?.title ?? 'Failed to link user', 'OK', { duration: 4000 })
+      });
     });
   }
 

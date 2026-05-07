@@ -1,6 +1,7 @@
 using ChurchManager.Application.Common.Interfaces;
 using ChurchManager.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChurchManager.Infrastructure.Services;
 
@@ -9,13 +10,22 @@ public class UserLinkingService(UserManager<ApplicationUser> userManager) : IUse
     public async Task<UserLinkInfo?> FindByIdAsync(string userId)
     {
         var user = await userManager.FindByIdAsync(userId);
-        return user == null ? null : new UserLinkInfo(user.Id, user.Email!, user.MemberId, user.IsActive);
+        return user == null ? null : new UserLinkInfo(user.Id, user.Email!, user.FullName, user.MemberId, user.IsActive);
     }
 
     public async Task<UserLinkInfo?> FindByEmailAsync(string email)
     {
         var user = await userManager.FindByEmailAsync(email);
-        return user == null ? null : new UserLinkInfo(user.Id, user.Email!, user.MemberId, user.IsActive);
+        return user == null ? null : new UserLinkInfo(user.Id, user.Email!, user.FullName, user.MemberId, user.IsActive);
+    }
+
+    public async Task<IReadOnlyList<UserLinkInfo>> GetUnlinkedUsersAsync()
+    {
+        return await userManager.Users
+            .Where(u => u.MemberId == null && u.IsActive)
+            .OrderBy(u => u.LastName).ThenBy(u => u.FirstName)
+            .Select(u => new UserLinkInfo(u.Id, u.Email!, u.FullName, null, true))
+            .ToListAsync();
     }
 
     public async Task SetMemberLinkAsync(string userId, int? memberId)
