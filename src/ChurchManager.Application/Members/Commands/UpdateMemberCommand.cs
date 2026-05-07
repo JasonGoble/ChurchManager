@@ -13,6 +13,7 @@ public record UpdateMemberCommand(
     string? Email,
     string? PhoneNumber,
     DateTime? DateOfBirth,
+    DateTime? JoinDate,
     Gender? Gender,
     MaritalStatus? MaritalStatus,
     MemberStatus Status,
@@ -36,6 +37,7 @@ public class UpdateMemberCommandHandler(IApplicationDbContext db) : IRequestHand
         member.Email = request.Email;
         member.PhoneNumber = request.PhoneNumber;
         member.DateOfBirth = request.DateOfBirth;
+        member.JoinDate = request.JoinDate;
         member.Gender = request.Gender;
         member.MaritalStatus = request.MaritalStatus;
         member.Status = request.Status;

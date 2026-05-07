@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -94,10 +94,10 @@ import { MemberStatus } from '../../../core/models/member.models';
                   <mat-label>Gender</mat-label>
                   <mat-select formControlName="gender">
                     <mat-option [value]="null">— Select —</mat-option>
-                    <mat-option [value]="0">Male</mat-option>
-                    <mat-option [value]="1">Female</mat-option>
-                    <mat-option [value]="2">Other</mat-option>
-                    <mat-option [value]="3">Prefer not to say</mat-option>
+                    <mat-option value="Male">Male</mat-option>
+                    <mat-option value="Female">Female</mat-option>
+                    <mat-option value="Other">Other</mat-option>
+                    <mat-option value="PreferNotToSay">Prefer not to say</mat-option>
                   </mat-select>
                 </mat-form-field>
 
@@ -105,21 +105,21 @@ import { MemberStatus } from '../../../core/models/member.models';
                   <mat-label>Marital Status</mat-label>
                   <mat-select formControlName="maritalStatus">
                     <mat-option [value]="null">— Select —</mat-option>
-                    <mat-option [value]="0">Single</mat-option>
-                    <mat-option [value]="1">Married</mat-option>
-                    <mat-option [value]="2">Divorced</mat-option>
-                    <mat-option [value]="3">Widowed</mat-option>
+                    <mat-option value="Single">Single</mat-option>
+                    <mat-option value="Married">Married</mat-option>
+                    <mat-option value="Divorced">Divorced</mat-option>
+                    <mat-option value="Widowed">Widowed</mat-option>
                   </mat-select>
                 </mat-form-field>
 
-                @if (isEdit()) {
+                @if (isEdit() && isAdmin()) {
                   <mat-form-field appearance="outline">
                     <mat-label>Status</mat-label>
                     <mat-select formControlName="status">
-                      <mat-option [value]="0">Active</mat-option>
-                      <mat-option [value]="1">Inactive</mat-option>
-                      <mat-option [value]="2">Visitor</mat-option>
-                      <mat-option [value]="3">Deceased</mat-option>
+                      <mat-option value="Active">Active</mat-option>
+                      <mat-option value="Inactive">Inactive</mat-option>
+                      <mat-option value="Visitor">Visitor</mat-option>
+                      <mat-option value="Deceased">Deceased</mat-option>
                     </mat-select>
                   </mat-form-field>
                 }
@@ -194,6 +194,8 @@ export class MemberFormComponent implements OnInit {
   saving = signal(false);
   memberId: number | null = null;
 
+  isAdmin = computed(() => !!this.auth.currentUser()?.isSystemAdmin);
+
   form = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
@@ -201,9 +203,9 @@ export class MemberFormComponent implements OnInit {
     phoneNumber: [''],
     dateOfBirth: [null as Date | null],
     joinDate: [null as Date | null],
-    gender: [null as number | null],
-    maritalStatus: [null as number | null],
-    status: [0],
+    gender: [null as string | null],
+    maritalStatus: [null as string | null],
+    status: ['Active'],
     address: [''],
     city: [''],
     state: [''],
@@ -223,7 +225,7 @@ export class MemberFormComponent implements OnInit {
             ...m,
             dateOfBirth: m.dateOfBirth ? new Date(m.dateOfBirth) : null,
             joinDate: m.joinDate ? new Date(m.joinDate) : null,
-          });
+          } as any);
           this.loading.set(false);
         },
         error: () => { this.loading.set(false); this.router.navigate(['/members']); }
