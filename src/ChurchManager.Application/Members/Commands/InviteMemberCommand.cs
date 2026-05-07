@@ -26,8 +26,23 @@ public class InviteMemberCommandHandler(
         if (member.UserId != null)
             throw new InvalidOperationException("Member already has a linked user account.");
 
-        var userId = await userService.CreateUserForMemberAsync(
-            member.Email, member.FirstName, member.LastName, member.Id, member.OrganizationId);
+        var existingUser = await userService.FindByEmailAsync(member.Email);
+        string userId;
+
+        if (existingUser != null)
+        {
+            if (existingUser.MemberId != null && existingUser.MemberId != member.Id)
+                throw new InvalidOperationException($"A user with email '{member.Email}' is already linked to a different member.");
+
+            userId = existingUser.Id;
+            if (existingUser.MemberId == null)
+                await userService.SetMemberLinkAsync(userId, member.Id);
+        }
+        else
+        {
+            userId = await userService.CreateUserForMemberAsync(
+                member.Email, member.FirstName, member.LastName, member.Id, member.OrganizationId);
+        }
 
         member.UserId = userId;
         await db.SaveChangesAsync(cancellationToken);

@@ -38,7 +38,7 @@ ChurchManager/
 | Organizations | ✅ Hierarchy tree with settings |
 | Members | ✅ Profiles, privacy controls, user account linking & invites |
 | Groups & Ministries | ✅ Types, leaders, schedules, capacity |
-| User Accounts | ✅ JWT auth, invite flow, My Profile page |
+| User Accounts | ✅ JWT auth, end-to-end invite & account setup flow, My Profile page |
 | Attendance | 🔲 Planned |
 | Giving | 🔲 Planned |
 | Events | 🔲 Planned |
