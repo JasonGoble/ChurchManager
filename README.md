@@ -36,8 +36,9 @@ ChurchManager/
 | Module | Status |
 |--------|--------|
 | Organizations | ✅ Hierarchy tree with settings |
-| Members | ✅ Profiles, families, tags |
+| Members | ✅ Profiles, privacy controls, user account linking & invites |
 | Groups & Ministries | ✅ Types, leaders, schedules, capacity |
+| User Accounts | ✅ JWT auth, invite flow, My Profile page |
 | Attendance | 🔲 Planned |
 | Giving | 🔲 Planned |
 | Events | 🔲 Planned |
