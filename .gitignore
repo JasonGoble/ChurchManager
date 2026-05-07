@@ -1,0 +1,47 @@
+# ===== .NET =====
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.swp
+logs/
+*.log
+
+# Secrets / config overrides
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+# EF migrations snapshots are intentionally tracked; keep this out:
+# (nothing to exclude here by default)
+
+# Test results
+TestResults/
+*.trx
+*.coveragexml
+
+# Publish output
+publish/
+
+# ===== Angular / Node =====
+web/**/node_modules/
+web/**/dist/
+web/**/tmp/
+web/**/out-tsc/
+web/**/.angular/cache/
+web/**/coverage/
+npm-debug.log
+yarn-error.log
+
+# ===== VS Code =====
+# Keep launch/tasks/extensions configs, ignore personal settings
+.vscode/settings.json
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Rider / JetBrains =====
+.idea/
+*.sln.iml

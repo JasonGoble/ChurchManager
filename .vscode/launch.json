@@ -1,0 +1,58 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API: Launch",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build: api",
+      "program": "${workspaceFolder}/src/ChurchManager.Api/bin/Debug/net10.0/ChurchManager.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/ChurchManager.Api",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      }
+    },
+    {
+      "name": "API: Attach",
+      "type": "coreclr",
+      "request": "attach",
+      "processName": "ChurchManager.Api"
+    },
+    {
+      "name": "Angular: Serve + Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "preLaunchTask": "serve: angular",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/web/church-manager-web/src",
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${workspaceFolder}/node_modules/*"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack",
+      "configurations": ["API: Launch", "Angular: Serve + Chrome"],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "",
+        "order": 1
+      }
+    }
+  ]
+}
