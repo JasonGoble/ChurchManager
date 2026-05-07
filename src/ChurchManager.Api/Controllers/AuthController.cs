@@ -32,18 +32,7 @@ public class AuthController(
         user.LastLoginAt = DateTime.UtcNow;
         await userManager.UpdateAsync(user);
 
-        return Ok(new
-        {
-            token,
-            user = new
-            {
-                user.Id,
-                user.Email,
-                user.FullName,
-                user.PrimaryOrganizationId,
-                user.MemberId
-            }
-        });
+        return Ok(new { token, user = await BuildUserResponseAsync(user) });
     }
 
     [HttpPost("register")]
@@ -94,12 +83,18 @@ public class AuthController(
         await userManager.UpdateAsync(user);
 
         var token = await GenerateJwtTokenAsync(user);
-        return Ok(new
-        {
-            token,
-            user = new { user.Id, user.Email, user.FullName, user.PrimaryOrganizationId, user.MemberId }
-        });
+        return Ok(new { token, user = await BuildUserResponseAsync(user) });
     }
+
+    private async Task<object> BuildUserResponseAsync(ApplicationUser user) => new
+    {
+        user.Id,
+        user.Email,
+        user.FullName,
+        user.PrimaryOrganizationId,
+        user.MemberId,
+        IsSystemAdmin = await userManager.IsInRoleAsync(user, "SystemAdmin")
+    };
 
     private async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
     {

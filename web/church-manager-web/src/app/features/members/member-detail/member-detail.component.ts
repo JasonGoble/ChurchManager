@@ -97,7 +97,7 @@ import { Member, MemberStatus } from '../../../core/models/member.models';
                         [title]="m.email ? '' : 'Member must have an email address'">
                   <mat-icon>email</mat-icon> Send Invite
                 </button>
-              } @else {
+              } @else if (isAdmin()) {
                 <button mat-stroked-button color="warn" (click)="unlinkUser(m)">
                   <mat-icon>link_off</mat-icon> Unlink
                 </button>
@@ -156,6 +156,8 @@ export class MemberDetailComponent implements OnInit {
     const m = this.member();
     return !!user && !!m && user.memberId === m.id;
   });
+
+  isAdmin = computed(() => !!this.authService.currentUser()?.isSystemAdmin);
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));

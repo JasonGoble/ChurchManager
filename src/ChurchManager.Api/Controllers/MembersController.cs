@@ -1,6 +1,7 @@
 using ChurchManager.Application.Members.Commands;
 using ChurchManager.Application.Members.Queries;
 using ChurchManager.Domain.Members;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChurchManager.Api.Controllers;
@@ -53,6 +54,7 @@ public class MembersController : BaseController
     }
 
     [HttpDelete("{id}/link-user")]
+    [Authorize(Roles = "SystemAdmin")]
     public async Task<IActionResult> UnlinkUser(int id, CancellationToken ct = default)
     {
         await Mediator.Send(new UnlinkMemberFromUserCommand(id), ct);

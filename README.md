@@ -143,6 +143,7 @@ On first run the database is seeded with:
 - **Auditing** — all entities inherit from `AuditableEntity` which stamps `CreatedAt` / `UpdatedAt` and scopes records to an `OrganizationId`.
 - **String enums** — the API serializes all enums as strings (`JsonStringEnumConverter`).
 - **Angular signals** — all component state uses `signal()` / `computed()`; no `BehaviorSubject` or manual change detection.
+- **Role-gated admin actions** — Destructive member-account operations (unlink) are restricted to the `SystemAdmin` role at the API level (`[Authorize(Roles = "SystemAdmin")]`). The `isSystemAdmin` flag returned by auth endpoints lets the frontend hide admin controls for regular users.
 
 ## Contributing
 

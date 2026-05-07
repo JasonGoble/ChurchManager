@@ -24,4 +24,5 @@ export interface CurrentUser {
   fullName: string;
   primaryOrganizationId: number;
   memberId?: number;
+  isSystemAdmin?: boolean;
 }

@@ -17,6 +17,7 @@ Each ADR is numbered sequentially and never edited after acceptance. If a decisi
 | [0007](0007-jwt-claims-strategy.md) | JWT Claims Strategy for Multi-Org Access | Accepted |
 | [0008](0008-member-invite-flow.md) | Member Invite Flow via Identity Password Reset Token | Accepted |
 | [0009](0009-angular-signals-first.md) | Angular Signals-First State Management | Accepted |
+| [0010](0010-systemadmin-role-enforcement.md) | SystemAdmin Role Enforcement for Destructive Member-Account Operations | Accepted |
 
 ## Template
 
