@@ -14,7 +14,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MemberService } from '../../../core/services/member.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { OrganizationService } from '../../../core/services/organization.service';
 import { MemberStatus } from '../../../core/models/member.models';
+import { Organization } from '../../../core/models/organization.models';
 
 @Component({
   selector: 'app-member-form',
@@ -123,6 +125,24 @@ import { MemberStatus } from '../../../core/models/member.models';
                     </mat-select>
                   </mat-form-field>
                 }
+
+                @if (!isEdit()) {
+                  @if (isAdmin()) {
+                    <mat-form-field appearance="outline">
+                      <mat-label>Organization</mat-label>
+                      <mat-select formControlName="organizationId">
+                        @for (org of orgs(); track org.id) {
+                          <mat-option [value]="org.id">{{ org.name }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  } @else {
+                    <mat-form-field appearance="outline">
+                      <mat-label>Organization</mat-label>
+                      <input matInput [value]="currentOrgName()" disabled />
+                    </mat-form-field>
+                  }
+                }
               </div>
             </mat-card-content>
           </mat-card>
@@ -187,14 +207,20 @@ export class MemberFormComponent implements OnInit {
   private router = inject(Router);
   private memberService = inject(MemberService);
   private auth = inject(AuthService);
+  private orgService = inject(OrganizationService);
   private snackBar = inject(MatSnackBar);
 
   isEdit = signal(false);
   loading = signal(false);
   saving = signal(false);
   memberId: number | null = null;
+  orgs = signal<Organization[]>([]);
 
   isAdmin = computed(() => !!this.auth.currentUser()?.isSystemAdmin);
+  currentOrgName = computed(() => {
+    const id = this.form.get('organizationId')?.value;
+    return this.orgs().find(o => o.id === id)?.name ?? '—';
+  });
 
   form = this.fb.group({
     firstName: ['', Validators.required],
@@ -206,6 +232,7 @@ export class MemberFormComponent implements OnInit {
     gender: [null as string | null],
     maritalStatus: [null as string | null],
     status: ['Active'],
+    organizationId: [this.auth.currentUser()?.primaryOrganizationId ?? null as number | null, Validators.required],
     address: [''],
     city: [''],
     state: [''],
@@ -214,6 +241,8 @@ export class MemberFormComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.orgService.getAll().subscribe(orgs => this.orgs.set(orgs));
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
       this.isEdit.set(true);
@@ -236,7 +265,6 @@ export class MemberFormComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
     this.saving.set(true);
-    const orgId = this.auth.currentUser()!.primaryOrganizationId;
     const v = this.form.value;
 
     if (this.isEdit()) {
@@ -248,7 +276,7 @@ export class MemberFormComponent implements OnInit {
         error: () => { this.saving.set(false); this.snackBar.open('Failed to save', 'OK', { duration: 3000 }); }
       });
     } else {
-      this.memberService.create({ organizationId: orgId, ...v as any }).subscribe({
+      this.memberService.create({ ...v as any }).subscribe({
         next: res => {
           this.snackBar.open('Member added', 'OK', { duration: 3000 });
           this.router.navigate(['/members', res.id]);

@@ -21,6 +21,7 @@ export interface Member {
   country?: string;
   notes?: string;
   organizationId: number;
+  orgName?: string;
   userId?: string;
   isLinkedToUser: boolean;
   sharePhoneWithNetwork: boolean;

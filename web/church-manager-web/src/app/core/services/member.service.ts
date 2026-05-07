@@ -51,4 +51,8 @@ export class MemberService {
   invite(memberId: number, acceptBaseUrl: string) {
     return this.http.post(`${this.baseUrl}/${memberId}/invite`, { acceptBaseUrl });
   }
+
+  moveOrganization(memberId: number, organizationId: number) {
+    return this.http.put(`${this.baseUrl}/${memberId}/organization`, { organizationId });
+  }
 }

@@ -21,6 +21,7 @@ public record MemberDto(
     string? Country,
     string? Notes,
     int OrganizationId,
+    string? OrgName,
     string? UserId,
     bool IsLinkedToUser,
     bool SharePhoneWithNetwork,

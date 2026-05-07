@@ -13,6 +13,7 @@ import { MemberService } from '../../../core/services/member.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Member, MemberStatus } from '../../../core/models/member.models';
 import { LinkUserDialogComponent, LinkUserDialogData } from '../link-user.dialog';
+import { MoveOrganizationDialogComponent, MoveOrganizationDialogData } from '../move-organization.dialog';
 import { UserSummary } from '../../../core/models/api.models';
 
 @Component({
@@ -52,6 +53,16 @@ import { UserSummary } from '../../../core/models/api.models';
             <div class="detail-grid">
               <span class="label">Status</span>
               <span><span [class]="'status-chip ' + statusClass(m.status)">{{ statusLabel(m.status) }}</span></span>
+              <span class="label">Organization</span>
+              <span style="display:flex;align-items:center;gap:8px">
+                {{ m.orgName ?? '—' }}
+                @if (isAdmin()) {
+                  <button mat-icon-button style="width:24px;height:24px;line-height:24px"
+                          title="Move to another organization" (click)="moveOrg(m)">
+                    <mat-icon style="font-size:16px;width:16px;height:16px">drive_file_move</mat-icon>
+                  </button>
+                }
+              </span>
               <span class="label">Email</span><span>{{ m.email ?? '—' }}</span>
               <span class="label">Phone</span><span>{{ m.phoneNumber ?? '—' }}</span>
               <span class="label">Date of Birth</span><span>{{ m.dateOfBirth ? (m.dateOfBirth | date:'mediumDate') : '—' }}</span>
@@ -207,6 +218,23 @@ export class MemberDetailComponent implements OnInit {
         this.reload();
       },
       error: () => this.snackBar.open('Failed to unlink user', 'OK', { duration: 3000 })
+    });
+  }
+
+  moveOrg(m: Member) {
+    const ref = this.dialog.open(MoveOrganizationDialogComponent, {
+      width: '440px',
+      data: { memberName: `${m.firstName} ${m.lastName}`, currentOrgId: m.organizationId, currentOrgName: m.orgName } satisfies MoveOrganizationDialogData
+    });
+    ref.afterClosed().subscribe((orgId: number | undefined) => {
+      if (!orgId) return;
+      this.memberService.moveOrganization(m.id, orgId).subscribe({
+        next: () => {
+          this.snackBar.open('Member moved successfully', 'OK', { duration: 3000 });
+          this.reload();
+        },
+        error: (err) => this.snackBar.open(err.error?.title ?? 'Failed to move member', 'OK', { duration: 4000 })
+      });
     });
   }
 

@@ -69,7 +69,16 @@ public class MembersController : BaseController
         await Mediator.Send(new InviteMemberCommand(id, request.AcceptBaseUrl), ct);
         return NoContent();
     }
+
+    [HttpPut("{id}/organization")]
+    [Authorize(Roles = "SystemAdmin")]
+    public async Task<IActionResult> MoveOrganization(int id, [FromBody] MoveOrgRequest request, CancellationToken ct = default)
+    {
+        await Mediator.Send(new MoveMemberToOrganizationCommand(id, request.OrganizationId), ct);
+        return NoContent();
+    }
 }
 
 public record LinkUserRequest(string UserId);
 public record InviteRequest(string AcceptBaseUrl);
+public record MoveOrgRequest(int OrganizationId);

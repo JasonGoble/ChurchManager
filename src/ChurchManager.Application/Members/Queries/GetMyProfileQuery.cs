@@ -17,16 +17,23 @@ public class GetMyProfileQueryHandler(
         if (!currentUser.IsAuthenticated || currentUser.UserId == null)
             return null;
 
-        return await db.Members
+        var member = await db.Members
             .Where(m => m.UserId == currentUser.UserId && !m.IsDeleted)
-            .Select(m => new MemberDto(
-                m.Id, m.FirstName, m.LastName, m.Email, m.PhoneNumber,
-                m.DateOfBirth, m.Gender, m.MaritalStatus, m.Status, m.JoinDate,
-                m.ProfilePhotoUrl, m.Address, m.City, m.State, m.PostalCode, m.Country,
-                m.Notes, m.OrganizationId,
-                m.UserId, true,
-                m.SharePhoneWithNetwork, m.ShareEmailWithNetwork, m.ShareAddressWithNetwork
-            ))
             .FirstOrDefaultAsync(cancellationToken);
+
+        if (member == null) return null;
+
+        var orgName = await db.Organizations
+            .Where(o => o.Id == member.OrganizationId)
+            .Select(o => o.Name)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return new MemberDto(
+            member.Id, member.FirstName, member.LastName, member.Email, member.PhoneNumber,
+            member.DateOfBirth, member.Gender, member.MaritalStatus, member.Status, member.JoinDate,
+            member.ProfilePhotoUrl, member.Address, member.City, member.State, member.PostalCode, member.Country,
+            member.Notes, member.OrganizationId, orgName,
+            member.UserId, true,
+            member.SharePhoneWithNetwork, member.ShareEmailWithNetwork, member.ShareAddressWithNetwork);
     }
 }
