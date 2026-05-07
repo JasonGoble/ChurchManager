@@ -8,8 +8,16 @@ namespace ChurchManager.Api.Controllers;
 public class MembersController : BaseController
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(int organizationId, int page = 1, int pageSize = 25, string? search = null, MemberStatus? status = null, CancellationToken ct = default)
-        => Ok(await Mediator.Send(new GetMembersQuery(organizationId, page, pageSize, search, status), ct));
+    public async Task<IActionResult> GetAll(
+        int organizationId, int page = 1, int pageSize = 25,
+        string? search = null, MemberStatus? status = null,
+        bool includeChildOrgs = false,
+        CancellationToken ct = default)
+        => Ok(await Mediator.Send(new GetMembersQuery(organizationId, page, pageSize, search, status, includeChildOrgs), ct));
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMyProfile(CancellationToken ct = default)
+        => Ok(await Mediator.Send(new GetMyProfileQuery(), ct));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id, CancellationToken ct = default)
@@ -36,4 +44,28 @@ public class MembersController : BaseController
         await Mediator.Send(new DeleteMemberCommand(id), ct);
         return NoContent();
     }
+
+    [HttpPost("{id}/link-user")]
+    public async Task<IActionResult> LinkUser(int id, [FromBody] LinkUserRequest request, CancellationToken ct = default)
+    {
+        await Mediator.Send(new LinkMemberToUserCommand(id, request.UserId), ct);
+        return NoContent();
+    }
+
+    [HttpDelete("{id}/link-user")]
+    public async Task<IActionResult> UnlinkUser(int id, CancellationToken ct = default)
+    {
+        await Mediator.Send(new UnlinkMemberFromUserCommand(id), ct);
+        return NoContent();
+    }
+
+    [HttpPost("{id}/invite")]
+    public async Task<IActionResult> Invite(int id, [FromBody] InviteRequest request, CancellationToken ct = default)
+    {
+        await Mediator.Send(new InviteMemberCommand(id, request.AcceptBaseUrl), ct);
+        return NoContent();
+    }
 }
+
+public record LinkUserRequest(string UserId);
+public record InviteRequest(string AcceptBaseUrl);

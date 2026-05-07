@@ -21,6 +21,11 @@ export interface Member {
   country?: string;
   notes?: string;
   organizationId: number;
+  userId?: string;
+  isLinkedToUser: boolean;
+  sharePhoneWithNetwork: boolean;
+  shareEmailWithNetwork: boolean;
+  shareAddressWithNetwork: boolean;
 }
 
 export interface MemberSummary {
@@ -29,6 +34,8 @@ export interface MemberSummary {
   email?: string;
   phoneNumber?: string;
   status: MemberStatus;
+  organizationId: number;
+  orgName?: string;
 }
 
 export interface CreateMemberRequest {

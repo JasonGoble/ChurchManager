@@ -23,4 +23,5 @@ export interface CurrentUser {
   email: string;
   fullName: string;
   primaryOrganizationId: number;
+  memberId?: number;
 }

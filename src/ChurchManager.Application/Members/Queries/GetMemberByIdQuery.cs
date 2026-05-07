@@ -21,6 +21,8 @@ public class GetMemberByIdQueryHandler(IApplicationDbContext db) : IRequestHandl
             member.DateOfBirth, member.Gender, member.MaritalStatus, member.Status,
             member.JoinDate, member.ProfilePhotoUrl,
             member.Address, member.City, member.State, member.PostalCode, member.Country,
-            member.Notes, member.OrganizationId);
+            member.Notes, member.OrganizationId,
+            member.UserId, member.UserId != null,
+            member.SharePhoneWithNetwork, member.ShareEmailWithNetwork, member.ShareAddressWithNetwork);
     }
 }

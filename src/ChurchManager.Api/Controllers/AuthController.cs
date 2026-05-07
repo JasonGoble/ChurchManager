@@ -1,7 +1,10 @@
+using ChurchManager.Application.Common.Interfaces;
+using ChurchManager.Domain.Auth;
 using ChurchManager.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -11,7 +14,11 @@ namespace ChurchManager.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(UserManager<ApplicationUser> userManager, IConfiguration configuration) : ControllerBase
+public class AuthController(
+    UserManager<ApplicationUser> userManager,
+    IConfiguration configuration,
+    IApplicationDbContext db,
+    IOrganizationHierarchyService hierarchyService) : ControllerBase
 {
     [HttpPost("login")]
     [AllowAnonymous]
@@ -21,11 +28,22 @@ public class AuthController(UserManager<ApplicationUser> userManager, IConfigura
         if (user == null || !user.IsActive || !await userManager.CheckPasswordAsync(user, request.Password))
             return Unauthorized(new { message = "Invalid credentials" });
 
-        var token = GenerateJwtToken(user);
+        var token = await GenerateJwtTokenAsync(user);
         user.LastLoginAt = DateTime.UtcNow;
         await userManager.UpdateAsync(user);
 
-        return Ok(new { token, user = new { user.Id, user.Email, user.FullName, user.PrimaryOrganizationId } });
+        return Ok(new
+        {
+            token,
+            user = new
+            {
+                user.Id,
+                user.Email,
+                user.FullName,
+                user.PrimaryOrganizationId,
+                user.MemberId
+            }
+        });
     }
 
     [HttpPost("register")]
@@ -61,7 +79,29 @@ public class AuthController(UserManager<ApplicationUser> userManager, IConfigura
         return Ok(new { message = "Password changed successfully" });
     }
 
-    private string GenerateJwtToken(ApplicationUser user)
+    [HttpPost("setup-account")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SetupAccount([FromBody] SetupAccountRequest request)
+    {
+        var user = await userManager.FindByEmailAsync(request.Email);
+        if (user == null) return BadRequest(new { message = "Invalid request" });
+
+        var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+        if (!result.Succeeded)
+            return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+
+        user.IsActive = true;
+        await userManager.UpdateAsync(user);
+
+        var token = await GenerateJwtTokenAsync(user);
+        return Ok(new
+        {
+            token,
+            user = new { user.Id, user.Email, user.FullName, user.PrimaryOrganizationId, user.MemberId }
+        });
+    }
+
+    private async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
     {
         var jwtSettings = configuration.GetSection("JwtSettings");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]!));
@@ -78,6 +118,32 @@ public class AuthController(UserManager<ApplicationUser> userManager, IConfigura
         if (user.PrimaryOrganizationId.HasValue)
             claims.Add(new("organization_id", user.PrimaryOrganizationId.Value.ToString()));
 
+        if (user.MemberId.HasValue)
+            claims.Add(new("member_id", user.MemberId.Value.ToString()));
+
+        // Compute accessible org IDs from all UserOrganizationRoles for this user
+        var roles = await db.UserOrganizationRoles
+            .Where(r => r.UserId == user.Id && r.IsActive)
+            .ToListAsync();
+
+        var isSystemAdmin = await userManager.IsInRoleAsync(user, "SystemAdmin");
+        if (isSystemAdmin)
+        {
+            claims.Add(new("system_admin", "true"));
+        }
+        else
+        {
+            var accessibleOrgIds = new HashSet<int>();
+            foreach (var role in roles)
+            {
+                var subtree = await hierarchyService.GetDescendantOrgIdsAsync(role.OrganizationId);
+                foreach (var id in subtree)
+                    accessibleOrgIds.Add(id);
+            }
+            foreach (var orgId in accessibleOrgIds)
+                claims.Add(new("accessible_org", orgId.ToString()));
+        }
+
         var token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],
             audience: jwtSettings["Audience"],
@@ -93,3 +159,4 @@ public class AuthController(UserManager<ApplicationUser> userManager, IConfigura
 public record LoginRequest(string Email, string Password);
 public record RegisterRequest(string FirstName, string LastName, string Email, string Password);
 public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
+public record SetupAccountRequest(string Email, string Token, string NewPassword);

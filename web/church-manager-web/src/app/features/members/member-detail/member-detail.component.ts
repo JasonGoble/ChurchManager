@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,9 +6,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MemberService } from '../../../core/services/member.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Member, MemberStatus } from '../../../core/models/member.models';
 
 @Component({
@@ -17,7 +19,7 @@ import { Member, MemberStatus } from '../../../core/models/member.models';
   imports: [
     CommonModule, RouterModule, MatButtonModule, MatIconModule,
     MatCardModule, MatProgressSpinnerModule, MatDividerModule,
-    MatDialogModule, MatSnackBarModule
+    MatDialogModule, MatSnackBarModule, MatSlideToggleModule
   ],
   template: `
     <div class="page-header">
@@ -69,6 +71,60 @@ import { Member, MemberStatus } from '../../../core/models/member.models';
           </mat-card-content>
         </mat-card>
 
+        <mat-card style="grid-column:1/-1">
+          <mat-card-header><mat-card-title>Account</mat-card-title></mat-card-header>
+          <mat-card-content>
+            <div class="detail-grid" style="margin-bottom:16px">
+              <span class="label">Linked Account</span>
+              <span>
+                @if (m.isLinkedToUser) {
+                  <span class="status-chip active">Linked</span>
+                  @if (m.userId) {
+                    <span style="margin-left:8px;color:#666;font-size:12px">{{ m.userId }}</span>
+                  }
+                } @else {
+                  <span class="status-chip inactive">Not Linked</span>
+                }
+              </span>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
+              @if (!m.isLinkedToUser) {
+                <button mat-stroked-button (click)="linkUser(m)">
+                  <mat-icon>link</mat-icon> Link User
+                </button>
+                <button mat-stroked-button color="accent" [disabled]="!m.email" (click)="invite(m)"
+                        [title]="m.email ? '' : 'Member must have an email address'">
+                  <mat-icon>email</mat-icon> Send Invite
+                </button>
+              } @else {
+                <button mat-stroked-button color="warn" (click)="unlinkUser(m)">
+                  <mat-icon>link_off</mat-icon> Unlink
+                </button>
+              }
+            </div>
+
+            @if (isOwnProfile()) {
+              <mat-divider style="margin-bottom:16px" />
+              <div style="font-weight:500;margin-bottom:12px;font-size:14px">Privacy — Sharing with Parent Organizations</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <mat-slide-toggle [checked]="m.sharePhoneWithNetwork"
+                  (change)="updatePrivacy(m, 'sharePhoneWithNetwork', $event.checked)">
+                  Share phone number
+                </mat-slide-toggle>
+                <mat-slide-toggle [checked]="m.shareEmailWithNetwork"
+                  (change)="updatePrivacy(m, 'shareEmailWithNetwork', $event.checked)">
+                  Share email address
+                </mat-slide-toggle>
+                <mat-slide-toggle [checked]="m.shareAddressWithNetwork"
+                  (change)="updatePrivacy(m, 'shareAddressWithNetwork', $event.checked)">
+                  Share home address
+                </mat-slide-toggle>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+
       </div>
     }
   `,
@@ -89,10 +145,17 @@ export class MemberDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private memberService = inject(MemberService);
+  private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
 
   member = signal<Member | null>(null);
   loading = signal(false);
+
+  isOwnProfile = computed(() => {
+    const user = this.authService.currentUser();
+    const m = this.member();
+    return !!user && !!m && user.memberId === m.id;
+  });
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -112,6 +175,50 @@ export class MemberDetailComponent implements OnInit {
       },
       error: () => this.snackBar.open('Failed to delete member', 'OK', { duration: 3000 })
     });
+  }
+
+  linkUser(m: Member) {
+    const userId = prompt('Enter the User ID to link:');
+    if (!userId?.trim()) return;
+    this.memberService.linkUser(m.id, userId.trim()).subscribe({
+      next: () => {
+        this.snackBar.open('User linked successfully', 'OK', { duration: 3000 });
+        this.reload();
+      },
+      error: (err) => this.snackBar.open(err.error?.title ?? 'Failed to link user', 'OK', { duration: 4000 })
+    });
+  }
+
+  unlinkUser(m: Member) {
+    if (!confirm('Unlink this member from their user account?')) return;
+    this.memberService.unlinkUser(m.id).subscribe({
+      next: () => {
+        this.snackBar.open('User unlinked', 'OK', { duration: 3000 });
+        this.reload();
+      },
+      error: () => this.snackBar.open('Failed to unlink user', 'OK', { duration: 3000 })
+    });
+  }
+
+  invite(m: Member) {
+    this.memberService.invite(m.id, window.location.origin).subscribe({
+      next: () => this.snackBar.open(`Invite sent to ${m.email}`, 'OK', { duration: 4000 }),
+      error: (err) => this.snackBar.open(err.error?.title ?? 'Failed to send invite', 'OK', { duration: 4000 })
+    });
+  }
+
+  updatePrivacy(m: Member, field: 'sharePhoneWithNetwork' | 'shareEmailWithNetwork' | 'shareAddressWithNetwork', value: boolean) {
+    this.memberService.update(m.id, { [field]: value }).subscribe({
+      next: () => {
+        this.member.set({ ...m, [field]: value });
+        this.snackBar.open('Privacy setting updated', 'OK', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('Failed to update privacy setting', 'OK', { duration: 3000 })
+    });
+  }
+
+  private reload() {
+    this.memberService.getById(this.member()!.id).subscribe(m => this.member.set(m));
   }
 
   statusLabel(status: MemberStatus) {

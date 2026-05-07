@@ -33,6 +33,9 @@ public class Member : AuditableEntity
     public string? EmergencyContactPhone { get; set; }
     public string? Notes { get; set; }
     public string? UserId { get; set; }
+    public bool SharePhoneWithNetwork { get; set; } = false;
+    public bool ShareEmailWithNetwork { get; set; } = false;
+    public bool ShareAddressWithNetwork { get; set; } = false;
     public int? FamilyId { get; set; }
     public MemberFamily? Family { get; set; }
     public ICollection<MemberTag> Tags { get; set; } = [];
