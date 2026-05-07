@@ -125,6 +125,7 @@ public class AuthController(
         if (isSystemAdmin)
         {
             claims.Add(new("system_admin", "true"));
+            claims.Add(new(ClaimTypes.Role, "SystemAdmin"));
         }
         else
         {
