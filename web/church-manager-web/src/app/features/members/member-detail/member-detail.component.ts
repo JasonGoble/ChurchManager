@@ -223,10 +223,10 @@ export class MemberDetailComponent implements OnInit {
     this.memberService.getById(this.member()!.id).subscribe(m => this.member.set(m));
   }
 
-  statusLabel(status: MemberStatus) {
-    return ['Active', 'Inactive', 'Visitor', 'Deceased'][status] ?? 'Unknown';
+  statusLabel(status: MemberStatus | string) {
+    return (status as string) ?? 'Unknown';
   }
-  statusClass(status: MemberStatus) {
-    return ['active', 'inactive', 'visitor', 'deceased'][status] ?? '';
+  statusClass(status: MemberStatus | string) {
+    return ((status as string) ?? '').toLowerCase();
   }
 }

@@ -166,10 +166,10 @@ export class MembersComponent implements OnInit {
   view(id: number) { this.router.navigate(['/members', id]); }
   edit(id: number) { this.router.navigate(['/members', id, 'edit']); }
 
-  statusLabel(status: MemberStatus) {
-    return ['Active', 'Inactive', 'Visitor', 'Deceased'][status] ?? 'Unknown';
+  statusLabel(status: MemberStatus | string) {
+    return (status as string) ?? 'Unknown';
   }
-  statusClass(status: MemberStatus) {
-    return ['active', 'inactive', 'visitor', 'deceased'][status] ?? '';
+  statusClass(status: MemberStatus | string) {
+    return ((status as string) ?? '').toLowerCase();
   }
 }
