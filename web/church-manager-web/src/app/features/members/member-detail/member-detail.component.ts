@@ -89,7 +89,7 @@ import { Member, MemberStatus } from '../../../core/models/member.models';
             </div>
 
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
-              @if (!m.isLinkedToUser) {
+              @if (!m.isLinkedToUser && isAdmin()) {
                 <button mat-stroked-button (click)="linkUser(m)">
                   <mat-icon>link</mat-icon> Link User
                 </button>
@@ -97,7 +97,7 @@ import { Member, MemberStatus } from '../../../core/models/member.models';
                         [title]="m.email ? '' : 'Member must have an email address'">
                   <mat-icon>email</mat-icon> Send Invite
                 </button>
-              } @else if (isAdmin()) {
+              } @else if (m.isLinkedToUser && isAdmin()) {
                 <button mat-stroked-button color="warn" (click)="unlinkUser(m)">
                   <mat-icon>link_off</mat-icon> Unlink
                 </button>

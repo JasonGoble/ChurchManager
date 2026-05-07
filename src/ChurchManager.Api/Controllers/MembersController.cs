@@ -47,6 +47,7 @@ public class MembersController : BaseController
     }
 
     [HttpPost("{id}/link-user")]
+    [Authorize(Roles = "SystemAdmin")]
     public async Task<IActionResult> LinkUser(int id, [FromBody] LinkUserRequest request, CancellationToken ct = default)
     {
         await Mediator.Send(new LinkMemberToUserCommand(id, request.UserId), ct);
@@ -62,6 +63,7 @@ public class MembersController : BaseController
     }
 
     [HttpPost("{id}/invite")]
+    [Authorize(Roles = "SystemAdmin")]
     public async Task<IActionResult> Invite(int id, [FromBody] InviteRequest request, CancellationToken ct = default)
     {
         await Mediator.Send(new InviteMemberCommand(id, request.AcceptBaseUrl), ct);

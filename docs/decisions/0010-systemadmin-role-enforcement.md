@@ -11,15 +11,18 @@ The JWT already carries a `system_admin` claim (see ADR-0007), but that claim wa
 
 ## Decision
 
-1. **API** — `DELETE /api/members/{id}/link-user` is decorated with `[Authorize(Roles = "SystemAdmin")]`. Non-admin callers receive 403 Forbidden.
+1. **API** — All three member-account operations are decorated with `[Authorize(Roles = "SystemAdmin")]`. Non-admin callers receive 403 Forbidden:
+   - `POST /api/members/{id}/link-user`
+   - `DELETE /api/members/{id}/link-user`
+   - `POST /api/members/{id}/invite`
 
 2. **Auth response** — Both `POST /auth/login` and `POST /auth/setup-account` now include `isSystemAdmin: bool` in the user payload, derived from `UserManager.IsInRoleAsync(user, "SystemAdmin")`. A `BuildUserResponseAsync` helper on `AuthController` avoids duplication between the two endpoints.
 
-3. **Frontend** — `CurrentUser` gains an `isSystemAdmin` field. The member detail component uses a `computed(() => !!currentUser()?.isSystemAdmin)` signal to conditionally render the Unlink button, so it is invisible to regular users.
+3. **Frontend** — `CurrentUser` gains an `isSystemAdmin` field. The member detail component uses a `computed(() => !!currentUser()?.isSystemAdmin)` signal to conditionally render Link User, Send Invite, and Unlink — all three are invisible to regular users.
 
 ## Consequences
 
 - The 403 on the API is the real security boundary; the hidden button is a UX convenience, not a security control.
 - `isSystemAdmin` is recomputed from Identity on every login/setup-account call, so role changes take effect at the next token refresh.
-- Link User and Send Invite are not yet API-restricted (they have no `[Authorize(Roles)]`); those actions are also admin-intent but the current risk is lower. A future task should apply consistent role gating to all three operations.
+- All three member-account operations are consistently role-gated at both the API and UI layers.
 - Adding `isSystemAdmin` to the auth response does not affect the JWT itself — the `system_admin` claim remains the authoritative source for server-side checks.
