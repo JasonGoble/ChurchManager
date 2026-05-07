@@ -1,5 +1,11 @@
 # ChurchManager
 
+> **A passion project born from a simple conviction:** churches shouldn't need a six-figure budget to manage their congregation. ChurchManager is a free, open-source alternative to expensive Church Management Systems (ChMS's) — built to give any church, anywhere in the world, access to the tools they need to shepherd their people, coordinate their ministries, and collaborate with the broader body of Christ.
+
+> **A note on how this was built:** This project is an experiment in *vibe coding* — the practice of building software through a collaborative, conversational workflow with an AI pair programmer (Claude). Every feature, migration, and architectural decision in this codebase was shaped through that dialogue. The goal is not just a working product, but a demonstration that thoughtful AI-assisted development can produce clean, maintainable, production-quality code.
+
+---
+
 A full-stack church management system built with .NET 10 and Angular 21.
 
 ## Tech Stack
