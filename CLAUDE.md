@@ -1,0 +1,88 @@
+# ChurchManager — Claude Working Guide
+
+Project conventions and technical gotchas for AI-assisted development on this repo.
+
+## Tech Stack (quick reference)
+
+- **API:** .NET 10, ASP.NET Core, MediatR (CQRS), FluentValidation, EF Core 10 + PostgreSQL
+- **Auth:** ASP.NET Core Identity + JWT Bearer; enums serialized as **strings** via `JsonStringEnumConverter`
+- **Frontend:** Angular 21, standalone components, Angular Material, signals-first state
+- **Architecture:** Clean Architecture — Domain → Application → Infrastructure → Api
+
+## Running Locally
+
+```powershell
+# Migrations (dotnet-ef is not on PATH — invoke via $env:USERPROFILE)
+$ef = "$env:USERPROFILE\.dotnet\tools\dotnet-ef.exe"
+& $ef migrations add <Name> --project src/ChurchManager.Infrastructure --startup-project src/ChurchManager.Api
+& $ef database update --project src/ChurchManager.Infrastructure --startup-project src/ChurchManager.Api
+
+# API
+dotnet run --project src/ChurchManager.Api   # http://localhost:5290
+
+# Frontend
+cd web/church-manager-web && npm start       # http://localhost:4200
+
+# Email (dev) — start Mailpit before the API
+mailpit                                       # UI at http://localhost:8025
+```
+
+## Branching & GitHub Workflow
+
+- **GitHub Flow:** `feature/<issue#>-<slug>` or `fix/<issue#>-<slug>` → PR → merge to `main`
+- Direct pushes to `main` are blocked; JasonGoble is on the bypass list
+- Assign `JasonGoble` to an issue when work **begins** on it (not before)
+- Include `Fixes #N` or `Closes #N` in commit messages so GitHub auto-closes issues on merge
+
+## GitHub Issue Conventions
+
+**Title format:** `feat:`, `bug:`, or `chore:` prefix — lowercase, e.g. `feat: attendance tracking`
+
+**Labels:**
+| Issue type | Labels |
+|------------|--------|
+| `feat:` | `feature`, `backend`, `frontend` |
+| `bug:` | `bug` |
+| `chore:` | `chore` |
+
+**Bug issue body structure:** Symptom → Root Cause → Fix → Fixed In (commit SHA)
+
+Create a GitHub issue for **every** reported defect, even small ones. The value is the cumulative searchable record linking symptoms to commits.
+
+## Before Every Commit
+
+Before staging, explicitly ask:
+
+1. **README.md** — does this change anything in the features table or architecture notes? If yes, update it in the same commit.
+2. **docs/decisions/** — does this introduce or close a meaningful architectural or policy decision? If yes, add a new numbered ADR and update `docs/decisions/README.md`. ADRs are never edited after acceptance — superseded decisions get a new ADR.
+
+A commit with no doc updates is fine, but the check must be deliberate, not skipped.
+
+## Key Technical Gotchas
+
+### String enums (critical)
+The API uses `JsonStringEnumConverter` globally — all enums serialize as strings (`"Active"`, `"Male"`, `"Single"`), **not** integers. Angular `mat-select` option values must use string literals to match:
+```html
+<!-- CORRECT -->
+<mat-option value="Active">Active</mat-option>
+
+<!-- WRONG — will never match API response -->
+<mat-option [value]="0">Active</mat-option>
+```
+`patchValue` from API responses sets string values; integer option values won't match → selects appear blank → data appears not to persist.
+
+### Angular signals (critical)
+All state that drives the template **must** be a `signal()`. Plain class properties are invisible to the scheduler. Use `computed()` for derived state. No `BehaviorSubject`, no manual `markForCheck()`.
+
+### JWT role claims
+`[Authorize(Roles = "SystemAdmin")]` checks `ClaimTypes.Role` — not the custom `system_admin` claim. Both must be added to the JWT in `GenerateJwtTokenAsync`. `isSystemAdmin` is also included in the auth response payload so the frontend can gate UI without parsing the token.
+
+### Admin-only operations
+The following member operations require `[Authorize(Roles = "SystemAdmin")]` at the API level and are hidden behind an `isAdmin()` computed signal in the UI:
+- Link user, Unlink user, Send invite (`/members/{id}/link-user`, `/members/{id}/invite`)
+- Move organization (`/members/{id}/organization`)
+- Status field in member edit form
+
+## Architecture Decision Records
+
+ADRs live in `docs/decisions/`. See `docs/decisions/README.md` for the index. Current range: 0001–0010.
