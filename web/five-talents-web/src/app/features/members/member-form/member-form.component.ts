@@ -17,6 +17,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { OrganizationService } from '../../../core/services/organization.service';
 import { MemberStatus } from '../../../core/models/member.models';
 import { Organization } from '../../../core/models/organization.models';
+import { DateInputDirective } from '../../../shared/directives/date-input.directive';
 
 @Component({
   selector: 'app-member-form',
@@ -25,7 +26,8 @@ import { Organization } from '../../../core/models/organization.models';
     CommonModule, RouterModule, ReactiveFormsModule,
     MatButtonModule, MatIconModule, MatCardModule, MatInputModule,
     MatFormFieldModule, MatSelectModule, MatDatepickerModule,
-    MatNativeDateModule, MatProgressSpinnerModule, MatSnackBarModule
+    MatNativeDateModule, MatProgressSpinnerModule, MatSnackBarModule,
+    DateInputDirective
   ],
   template: `
     <div class="page-header">
@@ -80,7 +82,6 @@ import { Organization } from '../../../core/models/organization.models';
                   <mat-label>Date of Birth</mat-label>
                   <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth"
                          placeholder="MM/DD/YYYY" autocomplete="bday" />
-                  <mat-hint>MM/DD/YYYY</mat-hint>
                   <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
                   <mat-datepicker #dobPicker />
                 </mat-form-field>
