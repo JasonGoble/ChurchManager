@@ -16,8 +16,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = ParseConnectionString(configuration.GetConnectionString("DefaultConnection") ?? "");
+
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+            options.UseNpgsql(connectionString,
                 npgsql => npgsql.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
@@ -43,5 +45,21 @@ public static class DependencyInjection
         services.AddScoped<IGoogleWorkspaceService, GoogleWorkspaceService>();
 
         return services;
+    }
+
+    // Render provides DATABASE_URL as a postgres:// URI; Npgsql requires key=value format.
+    private static string ParseConnectionString(string connectionString)
+    {
+        if (!connectionString.StartsWith("postgres://") && !connectionString.StartsWith("postgresql://"))
+            return connectionString;
+
+        var uri = new Uri(connectionString);
+        var userInfo = uri.UserInfo.Split(':', 2);
+        var username = Uri.UnescapeDataString(userInfo[0]);
+        var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+        var port = uri.Port > 0 ? uri.Port : 5432;
+        var database = uri.AbsolutePath.TrimStart('/');
+
+        return $"Host={uri.Host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
     }
 }
