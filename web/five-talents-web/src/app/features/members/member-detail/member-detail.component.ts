@@ -25,19 +25,19 @@ import { UserSummary } from '../../../core/models/api.models';
     MatDialogModule, MatSnackBarModule, MatSlideToggleModule
   ],
   template: `
-    <div class="page-header">
-      <div style="display:flex;align-items:center;gap:8px">
+    <div class="member-header">
+      <div class="member-header-top">
         <button mat-icon-button routerLink="/members"><mat-icon>arrow_back</mat-icon></button>
-        <h1>{{ member()?.firstName }} {{ member()?.lastName }}</h1>
+        <div class="page-header-actions">
+          <button mat-stroked-button [routerLink]="['/members', member()?.id, 'edit']">
+            <mat-icon>edit</mat-icon> Edit
+          </button>
+          <button mat-stroked-button color="warn" (click)="confirmDelete()">
+            <mat-icon>delete</mat-icon> Delete
+          </button>
+        </div>
       </div>
-      <div style="display:flex;gap:8px">
-        <button mat-stroked-button [routerLink]="['/members', member()?.id, 'edit']">
-          <mat-icon>edit</mat-icon> Edit
-        </button>
-        <button mat-stroked-button color="warn" (click)="confirmDelete()">
-          <mat-icon>delete</mat-icon> Delete
-        </button>
-      </div>
+      <h1 class="member-name">{{ member()?.firstName }} {{ member()?.lastName }}</h1>
     </div>
 
     @if (loading()) {
@@ -45,7 +45,7 @@ import { UserSummary } from '../../../core/models/api.models';
         <mat-spinner diameter="40" />
       </div>
     } @else if (member(); as m) {
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="cards-grid">
 
         <mat-card>
           <mat-card-header><mat-card-title>Personal Information</mat-card-title></mat-card-header>
@@ -142,6 +142,11 @@ import { UserSummary } from '../../../core/models/api.models';
     }
   `,
   styles: [`
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
     .detail-grid {
       display: grid;
       grid-template-columns: 140px 1fr;
@@ -152,6 +157,16 @@ import { UserSummary } from '../../../core/models/api.models';
     .label { color: #666; font-weight: 500; }
     mat-card { margin-top: 0; }
     mat-card-content { padding-top: 8px; }
+
+    .member-header { display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px; }
+    .member-header-top { display: flex; align-items: center; justify-content: space-between; }
+    .member-name { margin: 0 0 0 8px; }
+    .page-header-actions { display: flex; gap: 8px; }
+
+    @media (max-width: 767px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 120px 1fr; }
+    }
   `]
 })
 export class MemberDetailComponent implements OnInit {
@@ -195,7 +210,7 @@ export class MemberDetailComponent implements OnInit {
 
   linkUser(m: Member) {
     const ref = this.dialog.open(LinkUserDialogComponent, {
-      width: '480px',
+      width: '480px', maxWidth: '95vw',
       data: { memberName: `${m.firstName} ${m.lastName}`, memberEmail: m.email } satisfies LinkUserDialogData
     });
     ref.afterClosed().subscribe((user: UserSummary | undefined) => {
@@ -223,7 +238,7 @@ export class MemberDetailComponent implements OnInit {
 
   moveOrg(m: Member) {
     const ref = this.dialog.open(MoveOrganizationDialogComponent, {
-      width: '440px',
+      width: '440px', maxWidth: '95vw',
       data: { memberName: `${m.firstName} ${m.lastName}`, currentOrgId: m.organizationId, currentOrgName: m.orgName } satisfies MoveOrganizationDialogData
     });
     ref.afterClosed().subscribe((orgId: number | undefined) => {

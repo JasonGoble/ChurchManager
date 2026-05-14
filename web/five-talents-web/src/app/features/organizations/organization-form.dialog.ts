@@ -38,7 +38,7 @@ const TIMEZONES = [
   template: `
     <h2 mat-dialog-title>{{ isEdit ? 'Edit Organization' : 'Add Organization' }}</h2>
 
-    <mat-dialog-content style="min-width: 520px">
+    <mat-dialog-content>
       <mat-tab-group>
         <!-- General -->
         <mat-tab label="General">

@@ -1,8 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -58,6 +60,34 @@ import { MemberStatus, MemberSummary } from '../../core/models/member.models';
       <div style="display:flex;justify-content:center;padding:48px">
         <mat-spinner diameter="40" />
       </div>
+    } @else if (isMobile()) {
+      <!-- Mobile card list -->
+      @if (members().length === 0) {
+        <div style="padding:32px;text-align:center;color:#999">No members found.</div>
+      } @else {
+        <div class="mobile-card-list">
+          @for (m of members(); track m.id) {
+            <div class="member-card" (click)="view(m.id)">
+              <div class="member-card-main">
+                <span class="member-name">{{ m.fullName }}</span>
+                <span [class]="'status-chip ' + statusClass(m.status)">{{ statusLabel(m.status) }}</span>
+              </div>
+              @if (m.email) { <div class="member-card-secondary">{{ m.email }}</div> }
+              @if (m.phoneNumber) { <div class="member-card-secondary">{{ m.phoneNumber }}</div> }
+              <div class="member-card-actions" (click)="$event.stopPropagation()">
+                <button mat-icon-button (click)="view(m.id)"><mat-icon>visibility</mat-icon></button>
+                <button mat-icon-button (click)="edit(m.id)"><mat-icon>edit</mat-icon></button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+      <mat-paginator
+        [length]="totalCount()"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[10, 25, 50]"
+        (page)="onPage($event)"
+        showFirstLastButtons />
     } @else {
       <table mat-table [dataSource]="members()" class="mat-elevation-z2">
 
@@ -109,18 +139,37 @@ import { MemberStatus, MemberSummary } from '../../core/models/member.models';
         [pageSizeOptions]="[10, 25, 50]"
         (page)="onPage($event)"
         showFirstLastButtons />
-    }
+    } <!-- end @else desktop -->
   `,
   styles: [`
     .clickable-row { cursor: pointer; }
     .clickable-row:hover { background: #f5f5f5; }
     td.mat-column-actions { width: 80px; text-align: right; }
+
+    .mobile-card-list { display: flex; flex-direction: column; gap: 8px; }
+    .member-card {
+      background: #fff; border-radius: 8px; padding: 14px 16px;
+      box-shadow: 0 1px 4px rgba(31,42,68,0.07); cursor: pointer;
+      display: flex; flex-direction: column; gap: 4px;
+      transition: box-shadow 0.15s;
+    }
+    .member-card:hover { box-shadow: 0 2px 8px rgba(31,42,68,0.12); }
+    .member-card-main { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .member-name { font-weight: 500; font-size: 15px; color: #1F2A44; }
+    .member-card-secondary { font-size: 13px; color: #5E6B7A; }
+    .member-card-actions { display: flex; justify-content: flex-end; margin-top: 2px; }
   `]
 })
 export class MembersComponent implements OnInit {
   private memberService = inject(MemberService);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private bp = inject(BreakpointObserver);
+
+  isMobile = toSignal(
+    this.bp.observe('(max-width: 767px)').pipe(map(r => r.matches)),
+    { initialValue: false }
+  );
 
   columns = ['fullName', 'email', 'phoneNumber', 'status', 'actions'];
   members = signal<MemberSummary[]>([]);

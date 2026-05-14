@@ -1,8 +1,11 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -45,7 +48,7 @@ const STATUS_COLORS: Record<GroupStatus, { bg: string; color: string }> = {
   imports: [
     CommonModule, MatButtonModule, MatButtonToggleModule, MatCardModule,
     MatChipsModule, MatDialogModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatProgressSpinnerModule, MatTooltipModule,
+    MatInputModule, MatProgressSpinnerModule, MatTooltipModule, MatSelectModule,
   ],
   template: `
     <div class="page-header">
@@ -65,11 +68,22 @@ const STATUS_COLORS: Record<GroupStatus, { bg: string; color: string }> = {
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
 
-      <mat-button-toggle-group [value]="statusFilter()" (change)="statusFilter.set($event.value)">
-        @for (f of statusFilters; track f.label) {
-          <mat-button-toggle [value]="f.value">{{ f.label }}</mat-button-toggle>
-        }
-      </mat-button-toggle-group>
+      @if (isMobile()) {
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-label>Filter By</mat-label>
+          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+            @for (f of statusFilters; track f.label) {
+              <mat-option [value]="f.value">{{ f.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      } @else {
+        <mat-button-toggle-group [value]="statusFilter()" (change)="statusFilter.set($event.value)">
+          @for (f of statusFilters; track f.label) {
+            <mat-button-toggle [value]="f.value">{{ f.label }}</mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      }
     </div>
 
     @if (loading()) {
@@ -170,9 +184,10 @@ const STATUS_COLORS: Record<GroupStatus, { bg: string; color: string }> = {
     .page-header h1 { margin: 0; font-size: 24px; font-weight: 400; color: #333; }
 
     .filter-bar {
-      display: flex; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+      display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
     }
     .search-field { flex: 1; min-width: 220px; max-width: 360px; }
+    .filter-select { width: 160px; }
 
     .spinner-center { display: flex; justify-content: center; padding: 64px; }
 
@@ -252,6 +267,12 @@ export class GroupsComponent implements OnInit {
   private groupService = inject(GroupService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
+  private bp = inject(BreakpointObserver);
+
+  isMobile = toSignal(
+    this.bp.observe('(max-width: 767px)').pipe(map(r => r.matches)),
+    { initialValue: false }
+  );
 
   readonly statusFilters = STATUS_FILTERS;
 
@@ -291,6 +312,7 @@ export class GroupsComponent implements OnInit {
   openForm(group?: Group) {
     const ref = this.dialog.open(GroupFormDialogComponent, {
       width: '620px',
+      maxWidth: '95vw',
       data: { organizationId: this.orgId, group },
     });
     ref.afterClosed().subscribe(saved => { if (saved) this.load(); });
