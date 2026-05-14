@@ -11,10 +11,9 @@ COPY ["src/FiveTalents.Infrastructure/FiveTalents.Infrastructure.csproj", "src/F
 RUN dotnet restore "src/FiveTalents.Api/FiveTalents.Api.csproj"
 COPY . .
 WORKDIR "/src/src/FiveTalents.Api"
-RUN dotnet build "FiveTalents.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "FiveTalents.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "FiveTalents.Api.csproj" -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
