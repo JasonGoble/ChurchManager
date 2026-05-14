@@ -113,7 +113,7 @@ Trustworthiness · Clarity · Stability · Pastoral warmth · Simplicity
 
 | Role | Name | HEX |
 |------|------|-----|
-| Primary | Midnight Blue | `#1F2A44` |
+| Primary | Midnight Blue | `#0d3f78` |
 | Accent | Steward Gold | `#C8A96B` |
 | Background | Parchment | `#F7F3EB` |
 | Body Text | Charcoal | `#2B2B2B` |
@@ -147,25 +147,27 @@ Communicates liturgical tradition, stability, warmth, seriousness, and trust. Fe
 
 ## Logo Direction
 
-### Primary (recommended): Five Coins / Cathedral Window
+### ✅ Selected: Five Coins / Cathedral Window
 
-A geometric icon combining five circular "talents" arranged into a cross, cathedral window, or upward-growth form.
+A geometric icon combining five circular "talents" arranged into a cross, cathedral window, or upward-growth form. This direction was chosen and implemented as the app icon mark.
+
+**Source file:** `web/five-talents-web/public/icon.svg` (viewBox 0 0 320 340, Midnight Blue `#0d3f78` on Parchment `#F7F3EB`, Steward Gold `#C8A96B` coins and border)
 
 Why it works:
 - Communicates stewardship, multiplication, and church identity
 - Modern and minimal
 - Scales to favicon, app icon, mobile app, print bulletin, signage
 
-### Alternative A: Open Hands
+### Alternative A: Open Hands *(not selected)*
 Hands holding five subtle circles or light. Pastoral and warm — risk of becoming cliché.
 
-### Alternative B: Wheat / Vine
+### Alternative B: Wheat / Vine *(not selected)*
 Five grain kernels or vine nodes. Biblical and growth-oriented — less distinctive in software.
 
 ### Logo System Required
 - Full horizontal logo
 - Stacked logo
-- Icon-only mark
+- Icon-only mark ✅ (implemented)
 - Monochrome version
 - Dark-background version
 
@@ -210,9 +212,9 @@ Spacious · Uncluttered · Calm · Typographic · Card-based · Restrained
 - [ ] 3 logo concepts
 - [ ] Finalized color palette (CSS variables / design tokens)
 - [ ] Typography specimen
-- [ ] Favicon
+- [x] Favicon — all variants generated (`favicon.ico`, `favicon.svg`, 192/512 PNGs, apple-touch-icon); see `web/five-talents-web/public/` and `scripts/generate-icons.mjs`
 - [ ] Homepage hero mockup
-- [ ] App login screen branding
+- [x] App login screen branding — implemented (PR #34)
 
 ### v1 — Phase 2
 - [ ] UI component style guide (cards, buttons, forms, tables)
