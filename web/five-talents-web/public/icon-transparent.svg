@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 320 340" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs />
+  <!-- Window Fill -->
+  <path
+     d="m 160,35.981935 q 85,52.944238 85,132.360625 v 109.53981 q 0,22.82079 -25,22.82079 H 100 q -25,0 -25,-22.82079 V 168.34257 Q 75,88.926173 160,35.981935 Z"
+     fill="#0d3f78" />
+  <!-- Main vertical mullion -->
+  <line x1="160" y1="55.612465" x2="160" y2="286.38171" stroke="#f7f3eb" stroke-width="9.48064" stroke-linecap="round" />
+  <!-- Main horizontal mullion -->
+  <line x1="88" y1="180.70312" x2="232" y2="180.70312" stroke="#f7f3eb" stroke-width="10" stroke-linecap="round" />
+  <!-- Upper diagonals -->
+  <line x1="111.76543" y1="94.968468" x2="160" y2="179.04718" stroke="#f7f3eb" stroke-width="7.58451" stroke-linecap="round" />
+  <line x1="208.23457" y1="94.968468" x2="160" y2="179.04718" stroke="#f7f3eb" stroke-width="7.58451" stroke-linecap="round" />
+  <!-- Lower diagonals -->
+  <line x1="111.76543" y1="286.38171" x2="160" y2="179.04718" stroke="#f7f3eb" stroke-width="7.58451" stroke-linecap="round" />
+  <line x1="208.23457" y1="286.38171" x2="160" y2="179.04718" stroke="#f7f3eb" stroke-width="7.58451" stroke-linecap="round" />
+  <!-- Lower vertical mullions -->
+  <line x1="111.76543" y1="179.04718" x2="111.76543" y2="286.38171" stroke="#f7f3eb" stroke-width="6.63645" stroke-linecap="round" />
+  <line x1="208.23457" y1="179.04718" x2="208.23457" y2="286.38171" stroke="#f7f3eb" stroke-width="6.63645" stroke-linecap="round" />
+  <!-- Gold coins -->
+  <ellipse cx="160"       cy="180.70312" rx="22.314747" ry="22.876497" fill="#c8a96b" />
+  <ellipse cx="160"       cy="134.95013" rx="22.314747" ry="22.876497" fill="#c8a96b" />
+  <ellipse cx="115.37051" cy="180.70312" rx="22.314747" ry="22.876497" fill="#c8a96b" />
+  <ellipse cx="204.62949" cy="180.70312" rx="22.314747" ry="22.876497" fill="#c8a96b" />
+  <ellipse cx="160"       cy="226.45612" rx="22.314747" ry="22.876497" fill="#c8a96b" />
+  <!-- Gold border -->
+  <path
+     d="m 160,48.258225 q 75.2516,48.53932 75.2516,121.348285 V 274.775 q 0,16.17976 -18.06038,16.17976 H 102.80878 q -18.06038,0 -18.06038,-16.17976 V 169.60651 Q 84.7484,96.797545 160,48.258225 Z"
+     stroke="#c8a96b" stroke-width="10" stroke-linejoin="round" fill="none" />
+  <!-- Coin rings (white outlines) -->
+  <ellipse cx="204.62949" cy="180.70312" rx="22.314747" ry="22.876497" fill="none" stroke="#ffffff" stroke-width="6.64062" />
+  <ellipse cx="204.62949" cy="180.70312" rx="22.314747" ry="22.876497" fill="none" stroke="#ffffff" stroke-width="4.98047" />
+  <ellipse cx="159.5706"  cy="226.57767" rx="22.314747" ry="22.876497" fill="none" stroke="#ffffff" stroke-width="4.98047" />
+  <ellipse cx="159.5706"  cy="180.75735" rx="22.314747" ry="22.876497" fill="none" stroke="#ffffff" stroke-width="4.98047" />
+  <ellipse cx="159.5706"  cy="134.27298" rx="22.314747" ry="22.876497" fill="none" stroke="#ffffff" stroke-width="4.98047" />
+  <ellipse cx="114.41435" cy="182.08548" rx="22.314747" ry="22.876497" fill="none" stroke="#ffffff" stroke-width="4.98047" />
+</svg>
