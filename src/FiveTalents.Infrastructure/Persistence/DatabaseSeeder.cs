@@ -18,6 +18,8 @@ public static class DatabaseSeeder
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ApplicationDbContext>>();
 
+        await db.Database.MigrateAsync();
+
         // Seed roles
         foreach (var role in new[]
         {
