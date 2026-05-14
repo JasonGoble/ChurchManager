@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "2.0.0",
   "tasks": [
     {
@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/src/ChurchManager.Api/ChurchManager.Api.csproj",
+        "${workspaceFolder}/src/FiveTalents.Api/FiveTalents.Api.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -22,7 +22,7 @@
       "args": [
         "watch",
         "--project",
-        "${workspaceFolder}/src/ChurchManager.Api/ChurchManager.Api.csproj"
+        "${workspaceFolder}/src/FiveTalents.Api/FiveTalents.Api.csproj"
       ],
       "problemMatcher": "$msCompile",
       "isBackground": true,
@@ -55,7 +55,7 @@
       "type": "shell",
       "command": "npm run start",
       "options": {
-        "cwd": "${workspaceFolder}/web/church-manager-web"
+        "cwd": "${workspaceFolder}/web/five-talents-web"
       },
       "isBackground": true,
       "problemMatcher": {

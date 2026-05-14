@@ -1,6 +1,8 @@
-# ChurchManager
+﻿# FiveTalents
 
-> **A passion project born from a simple conviction:** churches shouldn't need a six-figure budget to manage their congregation. ChurchManager is a free, open-source alternative to expensive Church Management Systems (ChMS's) — built to give any church, anywhere in the world, access to the tools they need to shepherd their people, coordinate their ministries, and collaborate with the broader body of Christ.
+> *Faithful stewardship for growing churches.*
+
+Inspired by the Parable of the Talents (Matthew 25:14–30), FiveTalents is a free, open-source church management platform built for small-to-mid-sized churches — Anglican, Presbyterian, Lutheran, Methodist, and Reformed traditions especially. It gives any congregation modern tools to shepherd their people, coordinate ministries, and steward resources faithfully, without the complexity or cost of enterprise ChMS software.
 
 > **A note on how this was built:** This project is an experiment in *vibe coding* — the practice of building software through a collaborative, conversational workflow with an AI pair programmer (Claude). Every feature, migration, and architectural decision in this codebase was shaped through that dialogue. The goal is not just a working product, but a demonstration that thoughtful AI-assisted development can produce clean, maintainable, production-quality code.
 
@@ -21,14 +23,14 @@ A full-stack church management system built with .NET 10 and Angular 21.
 ## Project Structure
 
 ```
-ChurchManager/
+FiveTalents/
 ├── src/
-│   ├── ChurchManager.Domain/          # Entities, enums, domain logic
-│   ├── ChurchManager.Application/     # CQRS commands/queries, DTOs, interfaces
-│   ├── ChurchManager.Infrastructure/  # EF Core, Identity, external services
-│   └── ChurchManager.Api/             # Controllers, middleware, startup
+│   ├── FiveTalents.Domain/          # Entities, enums, domain logic
+│   ├── FiveTalents.Application/     # CQRS commands/queries, DTOs, interfaces
+│   ├── FiveTalents.Infrastructure/  # EF Core, Identity, external services
+│   └── FiveTalents.Api/             # Controllers, middleware, startup
 └── web/
-    └── church-manager-web/            # Angular 21 SPA
+    └── five-talents-web/            # Angular 21 SPA
 ```
 
 ## Features
@@ -58,11 +60,11 @@ ChurchManager/
 
 ### 1. Database
 
-Create a PostgreSQL database and update the connection string in `src/ChurchManager.Api/appsettings.json`:
+Create a PostgreSQL database and update the connection string in `src/FiveTalents.Api/appsettings.json`:
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Port=5432;Database=churchmanager;Username=postgres;Password=yourpassword"
+  "DefaultConnection": "Host=localhost;Port=5432;Database=FiveTalents;Username=postgres;Password=yourpassword"
 }
 ```
 
@@ -80,13 +82,13 @@ Replace the placeholder secret in `appsettings.json` with a strong random key (�
 
 ```powershell
 $ef = "$env:USERPROFILE\.dotnet\tools\dotnet-ef.exe"
-& $ef database update --project src/ChurchManager.Infrastructure --startup-project src/ChurchManager.Api
+& $ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
 ```
 
 ### 4. Start the API
 
 ```powershell
-dotnet run --project src/ChurchManager.Api
+dotnet run --project src/FiveTalents.Api
 # Listening on http://localhost:5290
 # OpenAPI docs: http://localhost:5290/openapi/v1.json
 ```
@@ -94,7 +96,7 @@ dotnet run --project src/ChurchManager.Api
 ### 5. Start the Frontend
 
 ```powershell
-cd web/church-manager-web
+cd web/five-talents-web
 npm install
 npm start
 # App running at http://localhost:4200
@@ -117,7 +119,7 @@ For production, set real SMTP credentials in `appsettings.json`:
   "Host": "smtp.yourprovider.com",
   "Port": 587,
   "FromAddress": "noreply@yourdomain.com",
-  "FromName": "ChurchManager",
+  "FromName": "FiveTalents",
   "Username": "your-smtp-username",
   "Password": "your-smtp-password"
 }
@@ -132,7 +134,7 @@ Open the workspace and press **F5** (or select **Full Stack** from the Run & Deb
 On first run the database is seeded with:
 
 - A root organization (*My Church*)
-- An admin user — `admin@churchmanager.com` / `Admin@1234`
+- An admin user — `admin@FiveTalents.com` / `Admin@1234`
 - Seven default group types (Small Group, Ministry Team, Bible Study, Prayer Group, Youth, Children, Leadership Team)
 
 ## Architecture Notes
@@ -147,6 +149,6 @@ On first run the database is seeded with:
 
 ## Contributing
 
-1. Create a feature branch: `git checkout -b feature/your-feature`
-2. Commit your changes and push
+1. Create a branch: `feature/<issue#>-<slug>` or `fix/<issue#>-<slug>`
+2. Commit your changes (include `Closes #N` to auto-close the issue on merge)
 3. Open a pull request against `main`
