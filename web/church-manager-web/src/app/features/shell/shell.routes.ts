@@ -18,6 +18,7 @@ export const SHELL_ROUTES: Routes = [
       { path: 'communication', loadComponent: () => import('../communication/communication.component').then(m => m.CommunicationComponent) },
       { path: 'organizations', loadComponent: () => import('../organizations/organizations.component').then(m => m.OrganizationsComponent) },
       { path: 'settings', loadComponent: () => import('../settings/settings.component').then(m => m.SettingsComponent) },
+      { path: 'profile', loadComponent: () => import('../profile/profile.component').then(m => m.ProfileComponent) },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   }

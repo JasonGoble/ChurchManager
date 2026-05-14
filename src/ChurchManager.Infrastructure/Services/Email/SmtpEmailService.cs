@@ -1,17 +1,39 @@
+using System.Net;
+using System.Net.Mail;
 using ChurchManager.Application.Common.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ChurchManager.Infrastructure.Services.Email;
 
-public class SmtpEmailService(ILogger<SmtpEmailService> logger) : IEmailService
+public class SmtpEmailService(IOptions<SmtpSettings> options, ILogger<SmtpEmailService> logger) : IEmailService
 {
+    private readonly SmtpSettings _settings = options.Value;
+
     public Task SendAsync(string to, string subject, string body, bool isHtml = true, CancellationToken cancellationToken = default)
         => SendAsync([to], subject, body, isHtml, cancellationToken);
 
     public async Task SendAsync(IEnumerable<string> recipients, string subject, string body, bool isHtml = true, CancellationToken cancellationToken = default)
     {
-        // TODO: implement SMTP / SendGrid / AWS SES
-        logger.LogInformation("Email to {Recipients}: {Subject}", string.Join(", ", recipients), subject);
-        await Task.CompletedTask;
+        if (!_settings.IsConfigured)
+        {
+            logger.LogWarning("SMTP not configured — skipping email to {Recipients}: {Subject}", string.Join(", ", recipients), subject);
+            return;
+        }
+
+        using var client = new SmtpClient(_settings.Host, _settings.Port);
+        client.DeliveryMethod = SmtpDeliveryMethod.Network;
+        client.EnableSsl = false;
+
+        if (!string.IsNullOrWhiteSpace(_settings.Username))
+            client.Credentials = new NetworkCredential(_settings.Username, _settings.Password);
+
+        var from = new MailAddress(_settings.FromAddress, _settings.FromName);
+        using var message = new MailMessage { From = from, Subject = subject, Body = body, IsBodyHtml = isHtml };
+        foreach (var recipient in recipients)
+            message.To.Add(recipient);
+
+        await client.SendMailAsync(message, cancellationToken);
+        logger.LogInformation("Email sent to {Recipients}: {Subject}", string.Join(", ", recipients), subject);
     }
 }

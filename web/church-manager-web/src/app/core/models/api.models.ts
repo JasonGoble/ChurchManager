@@ -18,9 +18,17 @@ export interface AuthResponse {
   user: CurrentUser;
 }
 
+export interface UserSummary {
+  id: string;
+  email: string;
+  fullName: string;
+}
+
 export interface CurrentUser {
   id: string;
   email: string;
   fullName: string;
   primaryOrganizationId: number;
+  memberId?: number;
+  isSystemAdmin?: boolean;
 }

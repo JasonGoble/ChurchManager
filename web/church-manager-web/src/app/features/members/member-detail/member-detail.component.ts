@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,8 +8,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MemberService } from '../../../core/services/member.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Member, MemberStatus } from '../../../core/models/member.models';
+import { LinkUserDialogComponent, LinkUserDialogData } from '../link-user.dialog';
+import { MoveOrganizationDialogComponent, MoveOrganizationDialogData } from '../move-organization.dialog';
+import { UserSummary } from '../../../core/models/api.models';
 
 @Component({
   selector: 'app-member-detail',
@@ -17,7 +22,7 @@ import { Member, MemberStatus } from '../../../core/models/member.models';
   imports: [
     CommonModule, RouterModule, MatButtonModule, MatIconModule,
     MatCardModule, MatProgressSpinnerModule, MatDividerModule,
-    MatDialogModule, MatSnackBarModule
+    MatDialogModule, MatSnackBarModule, MatSlideToggleModule
   ],
   template: `
     <div class="page-header">
@@ -48,6 +53,16 @@ import { Member, MemberStatus } from '../../../core/models/member.models';
             <div class="detail-grid">
               <span class="label">Status</span>
               <span><span [class]="'status-chip ' + statusClass(m.status)">{{ statusLabel(m.status) }}</span></span>
+              <span class="label">Organization</span>
+              <span style="display:flex;align-items:center;gap:8px">
+                {{ m.orgName ?? '—' }}
+                @if (isAdmin()) {
+                  <button mat-icon-button style="width:24px;height:24px;line-height:24px"
+                          title="Move to another organization" (click)="moveOrg(m)">
+                    <mat-icon style="font-size:16px;width:16px;height:16px">drive_file_move</mat-icon>
+                  </button>
+                }
+              </span>
               <span class="label">Email</span><span>{{ m.email ?? '—' }}</span>
               <span class="label">Phone</span><span>{{ m.phoneNumber ?? '—' }}</span>
               <span class="label">Date of Birth</span><span>{{ m.dateOfBirth ? (m.dateOfBirth | date:'mediumDate') : '—' }}</span>
@@ -66,6 +81,60 @@ import { Member, MemberStatus } from '../../../core/models/member.models';
               <span class="label">Postal Code</span><span>{{ m.postalCode ?? '—' }}</span>
               <span class="label">Country</span><span>{{ m.country ?? '—' }}</span>
             </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card style="grid-column:1/-1">
+          <mat-card-header><mat-card-title>Account</mat-card-title></mat-card-header>
+          <mat-card-content>
+            <div class="detail-grid" style="margin-bottom:16px">
+              <span class="label">Linked Account</span>
+              <span>
+                @if (m.isLinkedToUser) {
+                  <span class="status-chip active">Linked</span>
+                  @if (m.userId) {
+                    <span style="margin-left:8px;color:#666;font-size:12px">{{ m.userId }}</span>
+                  }
+                } @else {
+                  <span class="status-chip inactive">Not Linked</span>
+                }
+              </span>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
+              @if (!m.isLinkedToUser && isAdmin()) {
+                <button mat-stroked-button (click)="linkUser(m)">
+                  <mat-icon>link</mat-icon> Link User
+                </button>
+                <button mat-stroked-button color="accent" [disabled]="!m.email" (click)="invite(m)"
+                        [title]="m.email ? '' : 'Member must have an email address'">
+                  <mat-icon>email</mat-icon> Send Invite
+                </button>
+              } @else if (m.isLinkedToUser && isAdmin()) {
+                <button mat-stroked-button color="warn" (click)="unlinkUser(m)">
+                  <mat-icon>link_off</mat-icon> Unlink
+                </button>
+              }
+            </div>
+
+            @if (isOwnProfile()) {
+              <mat-divider style="margin-bottom:16px" />
+              <div style="font-weight:500;margin-bottom:12px;font-size:14px">Privacy — Sharing with Parent Organizations</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <mat-slide-toggle [checked]="m.sharePhoneWithNetwork"
+                  (change)="updatePrivacy(m, 'sharePhoneWithNetwork', $event.checked)">
+                  Share phone number
+                </mat-slide-toggle>
+                <mat-slide-toggle [checked]="m.shareEmailWithNetwork"
+                  (change)="updatePrivacy(m, 'shareEmailWithNetwork', $event.checked)">
+                  Share email address
+                </mat-slide-toggle>
+                <mat-slide-toggle [checked]="m.shareAddressWithNetwork"
+                  (change)="updatePrivacy(m, 'shareAddressWithNetwork', $event.checked)">
+                  Share home address
+                </mat-slide-toggle>
+              </div>
+            }
           </mat-card-content>
         </mat-card>
 
@@ -89,10 +158,20 @@ export class MemberDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private memberService = inject(MemberService);
+  private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   member = signal<Member | null>(null);
   loading = signal(false);
+
+  isOwnProfile = computed(() => {
+    const user = this.authService.currentUser();
+    const m = this.member();
+    return !!user && !!m && user.memberId === m.id;
+  });
+
+  isAdmin = computed(() => !!this.authService.currentUser()?.isSystemAdmin);
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -114,10 +193,76 @@ export class MemberDetailComponent implements OnInit {
     });
   }
 
-  statusLabel(status: MemberStatus) {
-    return ['Active', 'Inactive', 'Visitor', 'Deceased'][status] ?? 'Unknown';
+  linkUser(m: Member) {
+    const ref = this.dialog.open(LinkUserDialogComponent, {
+      width: '480px',
+      data: { memberName: `${m.firstName} ${m.lastName}`, memberEmail: m.email } satisfies LinkUserDialogData
+    });
+    ref.afterClosed().subscribe((user: UserSummary | undefined) => {
+      if (!user) return;
+      this.memberService.linkUser(m.id, user.id).subscribe({
+        next: () => {
+          this.snackBar.open('User linked successfully', 'OK', { duration: 3000 });
+          this.reload();
+        },
+        error: (err) => this.snackBar.open(err.error?.title ?? 'Failed to link user', 'OK', { duration: 4000 })
+      });
+    });
   }
-  statusClass(status: MemberStatus) {
-    return ['active', 'inactive', 'visitor', 'deceased'][status] ?? '';
+
+  unlinkUser(m: Member) {
+    if (!confirm('Unlink this member from their user account?')) return;
+    this.memberService.unlinkUser(m.id).subscribe({
+      next: () => {
+        this.snackBar.open('User unlinked', 'OK', { duration: 3000 });
+        this.reload();
+      },
+      error: () => this.snackBar.open('Failed to unlink user', 'OK', { duration: 3000 })
+    });
+  }
+
+  moveOrg(m: Member) {
+    const ref = this.dialog.open(MoveOrganizationDialogComponent, {
+      width: '440px',
+      data: { memberName: `${m.firstName} ${m.lastName}`, currentOrgId: m.organizationId, currentOrgName: m.orgName } satisfies MoveOrganizationDialogData
+    });
+    ref.afterClosed().subscribe((orgId: number | undefined) => {
+      if (!orgId) return;
+      this.memberService.moveOrganization(m.id, orgId).subscribe({
+        next: () => {
+          this.snackBar.open('Member moved successfully', 'OK', { duration: 3000 });
+          this.reload();
+        },
+        error: (err) => this.snackBar.open(err.error?.title ?? 'Failed to move member', 'OK', { duration: 4000 })
+      });
+    });
+  }
+
+  invite(m: Member) {
+    this.memberService.invite(m.id, window.location.origin).subscribe({
+      next: () => this.snackBar.open(`Invite sent to ${m.email}`, 'OK', { duration: 4000 }),
+      error: (err) => this.snackBar.open(err.error?.title ?? 'Failed to send invite', 'OK', { duration: 4000 })
+    });
+  }
+
+  updatePrivacy(m: Member, field: 'sharePhoneWithNetwork' | 'shareEmailWithNetwork' | 'shareAddressWithNetwork', value: boolean) {
+    this.memberService.update(m.id, { [field]: value }).subscribe({
+      next: () => {
+        this.member.set({ ...m, [field]: value });
+        this.snackBar.open('Privacy setting updated', 'OK', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('Failed to update privacy setting', 'OK', { duration: 3000 })
+    });
+  }
+
+  private reload() {
+    this.memberService.getById(this.member()!.id).subscribe(m => this.member.set(m));
+  }
+
+  statusLabel(status: MemberStatus | string) {
+    return (status as string) ?? 'Unknown';
+  }
+  statusClass(status: MemberStatus | string) {
+    return ((status as string) ?? '').toLowerCase();
   }
 }

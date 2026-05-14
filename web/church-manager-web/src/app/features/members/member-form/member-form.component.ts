@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,7 +14,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MemberService } from '../../../core/services/member.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { OrganizationService } from '../../../core/services/organization.service';
 import { MemberStatus } from '../../../core/models/member.models';
+import { Organization } from '../../../core/models/organization.models';
 
 @Component({
   selector: 'app-member-form',
@@ -94,10 +96,10 @@ import { MemberStatus } from '../../../core/models/member.models';
                   <mat-label>Gender</mat-label>
                   <mat-select formControlName="gender">
                     <mat-option [value]="null">— Select —</mat-option>
-                    <mat-option [value]="0">Male</mat-option>
-                    <mat-option [value]="1">Female</mat-option>
-                    <mat-option [value]="2">Other</mat-option>
-                    <mat-option [value]="3">Prefer not to say</mat-option>
+                    <mat-option value="Male">Male</mat-option>
+                    <mat-option value="Female">Female</mat-option>
+                    <mat-option value="Other">Other</mat-option>
+                    <mat-option value="PreferNotToSay">Prefer not to say</mat-option>
                   </mat-select>
                 </mat-form-field>
 
@@ -105,23 +107,41 @@ import { MemberStatus } from '../../../core/models/member.models';
                   <mat-label>Marital Status</mat-label>
                   <mat-select formControlName="maritalStatus">
                     <mat-option [value]="null">— Select —</mat-option>
-                    <mat-option [value]="0">Single</mat-option>
-                    <mat-option [value]="1">Married</mat-option>
-                    <mat-option [value]="2">Divorced</mat-option>
-                    <mat-option [value]="3">Widowed</mat-option>
+                    <mat-option value="Single">Single</mat-option>
+                    <mat-option value="Married">Married</mat-option>
+                    <mat-option value="Divorced">Divorced</mat-option>
+                    <mat-option value="Widowed">Widowed</mat-option>
                   </mat-select>
                 </mat-form-field>
 
-                @if (isEdit()) {
+                @if (isEdit() && isAdmin()) {
                   <mat-form-field appearance="outline">
                     <mat-label>Status</mat-label>
                     <mat-select formControlName="status">
-                      <mat-option [value]="0">Active</mat-option>
-                      <mat-option [value]="1">Inactive</mat-option>
-                      <mat-option [value]="2">Visitor</mat-option>
-                      <mat-option [value]="3">Deceased</mat-option>
+                      <mat-option value="Active">Active</mat-option>
+                      <mat-option value="Inactive">Inactive</mat-option>
+                      <mat-option value="Visitor">Visitor</mat-option>
+                      <mat-option value="Deceased">Deceased</mat-option>
                     </mat-select>
                   </mat-form-field>
+                }
+
+                @if (!isEdit()) {
+                  @if (isAdmin()) {
+                    <mat-form-field appearance="outline">
+                      <mat-label>Organization</mat-label>
+                      <mat-select formControlName="organizationId">
+                        @for (org of orgs(); track org.id) {
+                          <mat-option [value]="org.id">{{ org.name }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  } @else {
+                    <mat-form-field appearance="outline">
+                      <mat-label>Organization</mat-label>
+                      <input matInput [value]="currentOrgName()" disabled />
+                    </mat-form-field>
+                  }
                 }
               </div>
             </mat-card-content>
@@ -187,12 +207,20 @@ export class MemberFormComponent implements OnInit {
   private router = inject(Router);
   private memberService = inject(MemberService);
   private auth = inject(AuthService);
+  private orgService = inject(OrganizationService);
   private snackBar = inject(MatSnackBar);
 
   isEdit = signal(false);
   loading = signal(false);
   saving = signal(false);
   memberId: number | null = null;
+  orgs = signal<Organization[]>([]);
+
+  isAdmin = computed(() => !!this.auth.currentUser()?.isSystemAdmin);
+  currentOrgName = computed(() => {
+    const id = this.form.get('organizationId')?.value;
+    return this.orgs().find(o => o.id === id)?.name ?? '—';
+  });
 
   form = this.fb.group({
     firstName: ['', Validators.required],
@@ -201,9 +229,10 @@ export class MemberFormComponent implements OnInit {
     phoneNumber: [''],
     dateOfBirth: [null as Date | null],
     joinDate: [null as Date | null],
-    gender: [null as number | null],
-    maritalStatus: [null as number | null],
-    status: [0],
+    gender: [null as string | null],
+    maritalStatus: [null as string | null],
+    status: ['Active'],
+    organizationId: [this.auth.currentUser()?.primaryOrganizationId ?? null as number | null, Validators.required],
     address: [''],
     city: [''],
     state: [''],
@@ -212,6 +241,8 @@ export class MemberFormComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.orgService.getAll().subscribe(orgs => this.orgs.set(orgs));
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
       this.isEdit.set(true);
@@ -223,7 +254,7 @@ export class MemberFormComponent implements OnInit {
             ...m,
             dateOfBirth: m.dateOfBirth ? new Date(m.dateOfBirth) : null,
             joinDate: m.joinDate ? new Date(m.joinDate) : null,
-          });
+          } as any);
           this.loading.set(false);
         },
         error: () => { this.loading.set(false); this.router.navigate(['/members']); }
@@ -234,7 +265,6 @@ export class MemberFormComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
     this.saving.set(true);
-    const orgId = this.auth.currentUser()!.primaryOrganizationId;
     const v = this.form.value;
 
     if (this.isEdit()) {
@@ -246,7 +276,7 @@ export class MemberFormComponent implements OnInit {
         error: () => { this.saving.set(false); this.snackBar.open('Failed to save', 'OK', { duration: 3000 }); }
       });
     } else {
-      this.memberService.create({ organizationId: orgId, ...v as any }).subscribe({
+      this.memberService.create({ ...v as any }).subscribe({
         next: res => {
           this.snackBar.open('Member added', 'OK', { duration: 3000 });
           this.router.navigate(['/members', res.id]);

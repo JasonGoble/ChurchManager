@@ -9,11 +9,12 @@ export class MemberService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/members`;
 
-  getAll(organizationId: number, page = 1, pageSize = 25, search?: string, status?: MemberStatus) {
+  getAll(organizationId: number, page = 1, pageSize = 25, search?: string, status?: MemberStatus, includeChildOrgs = false) {
     let params = new HttpParams()
       .set('organizationId', organizationId)
       .set('page', page)
-      .set('pageSize', pageSize);
+      .set('pageSize', pageSize)
+      .set('includeChildOrgs', includeChildOrgs);
     if (search) params = params.set('search', search);
     if (status !== undefined) params = params.set('status', status);
     return this.http.get<PaginatedResult<MemberSummary>>(this.baseUrl, { params });
@@ -21,6 +22,10 @@ export class MemberService {
 
   getById(id: number) {
     return this.http.get<Member>(`${this.baseUrl}/${id}`);
+  }
+
+  getMyProfile() {
+    return this.http.get<Member | null>(`${this.baseUrl}/me`);
   }
 
   create(member: CreateMemberRequest) {
@@ -33,5 +38,21 @@ export class MemberService {
 
   delete(id: number) {
     return this.http.delete(`${this.baseUrl}/${id}`);
+  }
+
+  linkUser(memberId: number, userId: string) {
+    return this.http.post(`${this.baseUrl}/${memberId}/link-user`, { userId });
+  }
+
+  unlinkUser(memberId: number) {
+    return this.http.delete(`${this.baseUrl}/${memberId}/link-user`);
+  }
+
+  invite(memberId: number, acceptBaseUrl: string) {
+    return this.http.post(`${this.baseUrl}/${memberId}/invite`, { acceptBaseUrl });
+  }
+
+  moveOrganization(memberId: number, organizationId: number) {
+    return this.http.put(`${this.baseUrl}/${memberId}/organization`, { organizationId });
   }
 }

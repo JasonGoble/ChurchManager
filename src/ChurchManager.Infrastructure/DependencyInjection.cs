@@ -1,6 +1,7 @@
 using ChurchManager.Application.Common.Interfaces;
 using ChurchManager.Infrastructure.Identity;
 using ChurchManager.Infrastructure.Persistence;
+using ChurchManager.Infrastructure.Services;
 using ChurchManager.Infrastructure.Services.Email;
 using ChurchManager.Infrastructure.Services.GoogleWorkspace;
 using ChurchManager.Infrastructure.Services.Sms;
@@ -34,6 +35,9 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IOrganizationHierarchyService, OrganizationHierarchyService>();
+        services.AddScoped<IUserLinkingService, UserLinkingService>();
+        services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
         services.AddScoped<IEmailService, SmtpEmailService>();
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<IGoogleWorkspaceService, GoogleWorkspaceService>();

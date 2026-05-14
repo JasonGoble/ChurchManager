@@ -3,6 +3,7 @@ using System;
 using ChurchManager.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChurchManager.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260507152906_AddMemberUserLinkAndPrivacy")]
+    partial class AddMemberUserLinkAndPrivacy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,7 +72,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("AttendanceRecords", (string)null);
+                    b.ToTable("AttendanceRecords");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Attendance.AttendanceSession", b =>
@@ -119,7 +122,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AttendanceSessions", (string)null);
+                    b.ToTable("AttendanceSessions");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Auth.UserOrganizationRole", b =>
@@ -163,7 +166,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("UserOrganizationRoles", (string)null);
+                    b.ToTable("UserOrganizationRoles");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Communication.CommunicationLog", b =>
@@ -228,7 +231,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("TemplateId");
 
-                    b.ToTable("CommunicationLogs", (string)null);
+                    b.ToTable("CommunicationLogs");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Communication.CommunicationTemplate", b =>
@@ -280,7 +283,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CommunicationTemplates", (string)null);
+                    b.ToTable("CommunicationTemplates");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Events.ChurchEvent", b =>
@@ -365,7 +368,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("CoordinatorId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Events.EventRegistration", b =>
@@ -421,7 +424,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("EventRegistrations", (string)null);
+                    b.ToTable("EventRegistrations");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Giving.Donation", b =>
@@ -496,7 +499,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("PledgeId");
 
-                    b.ToTable("Donations", (string)null);
+                    b.ToTable("Donations");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Giving.DonationBatch", b =>
@@ -540,7 +543,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DonationBatches", (string)null);
+                    b.ToTable("DonationBatches");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Giving.DonationFund", b =>
@@ -587,7 +590,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DonationFunds", (string)null);
+                    b.ToTable("DonationFunds");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Giving.DonationPledge", b =>
@@ -646,7 +649,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("DonationPledges", (string)null);
+                    b.ToTable("DonationPledges");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Groups.Group", b =>
@@ -725,7 +728,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Groups", (string)null);
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Groups.GroupMeeting", b =>
@@ -773,7 +776,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("GroupMeetings", (string)null);
+                    b.ToTable("GroupMeetings");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Groups.GroupMember", b =>
@@ -823,7 +826,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("GroupMembers", (string)null);
+                    b.ToTable("GroupMembers");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Groups.GroupType", b =>
@@ -867,7 +870,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupTypes", (string)null);
+                    b.ToTable("GroupTypes");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Members.Member", b =>
@@ -986,7 +989,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("FamilyId");
 
-                    b.ToTable("Members", (string)null);
+                    b.ToTable("Members");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Members.MemberFamily", b =>
@@ -1033,7 +1036,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MemberFamilies", (string)null);
+                    b.ToTable("MemberFamilies");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Members.MemberTag", b =>
@@ -1070,7 +1073,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("MemberTags", (string)null);
+                    b.ToTable("MemberTags");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Organizations.Organization", b =>
@@ -1146,7 +1149,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("ParentOrganizationId");
 
-                    b.ToTable("Organizations", (string)null);
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Organizations.OrganizationLevel", b =>
@@ -1191,7 +1194,7 @@ namespace ChurchManager.Infrastructure.Migrations
                     b.HasIndex("Level")
                         .IsUnique();
 
-                    b.ToTable("OrganizationLevels", (string)null);
+                    b.ToTable("OrganizationLevels");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Organizations.OrganizationSettings", b =>
@@ -1258,7 +1261,7 @@ namespace ChurchManager.Infrastructure.Migrations
                     b.HasIndex("OrganizationId")
                         .IsUnique();
 
-                    b.ToTable("OrganizationSettings", (string)null);
+                    b.ToTable("OrganizationSettings");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Sermons.Sermon", b =>
@@ -1342,7 +1345,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("SpeakerId");
 
-                    b.ToTable("Sermons", (string)null);
+                    b.ToTable("Sermons");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Sermons.SermonSeries", b =>
@@ -1392,7 +1395,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SermonSeries", (string)null);
+                    b.ToTable("SermonSeries");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Sermons.SermonTag", b =>
@@ -1429,7 +1432,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("SermonId");
 
-                    b.ToTable("SermonTags", (string)null);
+                    b.ToTable("SermonTags");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Volunteers.VolunteerAssignment", b =>
@@ -1482,7 +1485,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasIndex("OpportunityId");
 
-                    b.ToTable("VolunteerAssignments", (string)null);
+                    b.ToTable("VolunteerAssignments");
                 });
 
             modelBuilder.Entity("ChurchManager.Domain.Volunteers.VolunteerOpportunity", b =>
@@ -1532,7 +1535,7 @@ namespace ChurchManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VolunteerOpportunities", (string)null);
+                    b.ToTable("VolunteerOpportunities");
                 });
 
             modelBuilder.Entity("ChurchManager.Infrastructure.Identity.ApplicationUser", b =>

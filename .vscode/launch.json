@@ -5,7 +5,7 @@
       "name": "API: Launch",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build: api",
+      "preLaunchTask": "pre-launch: full stack",
       "program": "${workspaceFolder}/src/ChurchManager.Api/bin/Debug/net10.0/ChurchManager.Api.dll",
       "args": [],
       "cwd": "${workspaceFolder}/src/ChurchManager.Api",

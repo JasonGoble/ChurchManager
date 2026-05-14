@@ -98,6 +98,21 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<OrganizationLevel>()
             .HasIndex(l => l.Level)
             .IsUnique();
+
+        // Member ↔ ApplicationUser one-to-one (FK on ApplicationUser side to keep Domain clean)
+        builder.Entity<ApplicationUser>()
+            .HasOne<Member>()
+            .WithOne()
+            .HasForeignKey<ApplicationUser>(u => u.MemberId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // UserOrganizationRole relationships
+        builder.Entity<UserOrganizationRole>()
+            .HasOne(r => r.Organization)
+            .WithMany()
+            .HasForeignKey(r => r.OrganizationId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

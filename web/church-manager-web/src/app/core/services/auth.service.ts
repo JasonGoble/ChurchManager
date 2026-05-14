@@ -15,13 +15,21 @@ export class AuthService {
 
   login(email: string, password: string) {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password }).pipe(
-      tap(response => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
-        this.currentUser.set(response.user);
-        this.isAuthenticated.set(true);
-      })
+      tap(response => this.storeSession(response))
     );
+  }
+
+  setupAccount(email: string, token: string, newPassword: string) {
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/setup-account`, { email, token, newPassword }).pipe(
+      tap(response => this.storeSession(response))
+    );
+  }
+
+  private storeSession(response: AuthResponse) {
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('user', JSON.stringify(response.user));
+    this.currentUser.set(response.user);
+    this.isAuthenticated.set(true);
   }
 
   logout() {

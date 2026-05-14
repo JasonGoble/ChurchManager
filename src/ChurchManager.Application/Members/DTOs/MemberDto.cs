@@ -20,7 +20,22 @@ public record MemberDto(
     string? PostalCode,
     string? Country,
     string? Notes,
-    int OrganizationId
+    int OrganizationId,
+    string? OrgName,
+    string? UserId,
+    bool IsLinkedToUser,
+    bool SharePhoneWithNetwork,
+    bool ShareEmailWithNetwork,
+    bool ShareAddressWithNetwork
 );
 
-public record MemberSummaryDto(int Id, string FullName, string? Email, string? PhoneNumber, MemberStatus Status);
+// Returned when viewing a member from a parent org (hierarchy visibility, not direct membership)
+public record MemberSummaryDto(
+    int Id,
+    string FullName,
+    string? Email,
+    string? PhoneNumber,
+    MemberStatus Status,
+    int OrganizationId,
+    string? OrgName = null
+);

@@ -45,3 +45,6 @@ desktop.ini
 # ===== Rider / JetBrains =====
 .idea/
 *.sln.iml
+
+# ===== Claude Code =====
+.claude/

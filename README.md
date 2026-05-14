@@ -36,8 +36,9 @@ ChurchManager/
 | Module | Status |
 |--------|--------|
 | Organizations | ✅ Hierarchy tree with settings |
-| Members | ✅ Profiles, families, tags |
+| Members | ✅ Profiles, privacy controls, user account linking & invites, admin-only status & org management (move between orgs) |
 | Groups & Ministries | ✅ Types, leaders, schedules, capacity |
+| User Accounts | ✅ JWT auth, end-to-end invite & account setup flow, My Profile page |
 | Attendance | 🔲 Planned |
 | Giving | 🔲 Planned |
 | Events | 🔲 Planned |
@@ -51,6 +52,7 @@ ChurchManager/
 - [Node.js 22+ / npm 11+](https://nodejs.org)
 - [PostgreSQL 16+](https://www.postgresql.org)
 - [Angular CLI](https://angular.io/cli) — `npm install -g @angular/cli`
+- **Email (dev)** — [Mailpit](https://mailpit.axllent.org) catches outgoing emails locally (`winget install axllent.mailpit`). Web UI at `http://localhost:8025`. For production, configure a real SMTP provider in `appsettings.json` under `SmtpSettings`.
 
 ## Getting Started
 
@@ -98,9 +100,32 @@ npm start
 # App running at http://localhost:4200
 ```
 
+### 6. Email (optional, for invite flow)
+
+For local development, start Mailpit before running the API. Outgoing emails appear at `http://localhost:8025`.
+
+```powershell
+mailpit
+```
+
+When using **F5** in VS Code, Mailpit starts automatically alongside the API.
+
+For production, set real SMTP credentials in `appsettings.json`:
+
+```json
+"SmtpSettings": {
+  "Host": "smtp.yourprovider.com",
+  "Port": 587,
+  "FromAddress": "noreply@yourdomain.com",
+  "FromName": "ChurchManager",
+  "Username": "your-smtp-username",
+  "Password": "your-smtp-password"
+}
+```
+
 ### VS Code (Full Stack)
 
-Open the workspace and press **F5** (or select **Full Stack** from the Run & Debug panel) to build the API and launch both servers with a Chrome debugger attached.
+Open the workspace and press **F5** (or select **Full Stack** from the Run & Debug panel) to build the API, start Mailpit, and launch both servers with a Chrome debugger attached.
 
 ## Default Seed Data
 
@@ -118,6 +143,7 @@ On first run the database is seeded with:
 - **Auditing** — all entities inherit from `AuditableEntity` which stamps `CreatedAt` / `UpdatedAt` and scopes records to an `OrganizationId`.
 - **String enums** — the API serializes all enums as strings (`JsonStringEnumConverter`).
 - **Angular signals** — all component state uses `signal()` / `computed()`; no `BehaviorSubject` or manual change detection.
+- **Role-gated admin actions** — Destructive member-account operations (unlink) are restricted to the `SystemAdmin` role at the API level (`[Authorize(Roles = "SystemAdmin")]`). The `isSystemAdmin` flag returned by auth endpoints lets the frontend hide admin controls for regular users.
 
 ## Contributing
 

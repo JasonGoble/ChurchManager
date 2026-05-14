@@ -25,7 +25,7 @@ import { AuthService } from '../../core/services/auth.service';
           <li><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
         </ul>
         <div class="user-info">
-          <span>{{ auth.currentUser()?.fullName }}</span>
+          <a routerLink="/profile" routerLinkActive="active" style="font-size:14px">{{ auth.currentUser()?.fullName }}</a>
           <button (click)="auth.logout()">Sign Out</button>
         </div>
       </nav>
