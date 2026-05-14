@@ -10,7 +10,7 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="login-container">
-      <h1>Church Manager</h1>
+      <h1>FiveTalents</h1>
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div>
           <label>Email</label>

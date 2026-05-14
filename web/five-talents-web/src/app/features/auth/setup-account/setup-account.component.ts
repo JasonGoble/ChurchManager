@@ -16,7 +16,7 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="login-container">
-      <h1>Church Manager</h1>
+      <h1>FiveTalents</h1>
       <h2>Set Up Your Account</h2>
       <p>Welcome, {{ email }}. Choose a password to activate your account.</p>
       <form [formGroup]="form" (ngSubmit)="onSubmit()">

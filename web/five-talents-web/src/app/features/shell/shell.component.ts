@@ -10,7 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
   template: `
     <div class="app-layout">
       <nav class="sidebar">
-        <div class="logo"><strong>Church Manager</strong></div>
+        <div class="logo"><strong>FiveTalents</strong></div>
         <ul>
           <li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
           <li><a routerLink="/members" routerLinkActive="active">Members</a></li>
