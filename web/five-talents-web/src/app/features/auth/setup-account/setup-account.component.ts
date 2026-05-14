@@ -15,27 +15,32 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="login-container">
-      <h1>FiveTalents</h1>
-      <h2>Set Up Your Account</h2>
-      <p>Welcome, {{ email }}. Choose a password to activate your account.</p>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div>
-          <label>New Password</label>
-          <input type="password" formControlName="newPassword" />
+    <div class="auth-page">
+      <div class="auth-card">
+        <div class="auth-brand">
+          <h1>FiveTalents</h1>
+          <p class="tagline">Set Up Your Account</p>
+          <div class="divider"></div>
         </div>
-        <div>
-          <label>Confirm Password</label>
-          <input type="password" formControlName="confirmPassword" />
-          <span *ngIf="form.hasError('passwordMismatch') && form.get('confirmPassword')?.touched" class="error">
-            Passwords do not match.
-          </span>
-        </div>
-        <button type="submit" [disabled]="form.invalid || loading">
-          {{ loading ? 'Activating...' : 'Activate Account' }}
-        </button>
-        <p *ngIf="error" class="error">{{ error }}</p>
-      </form>
+        <p class="auth-welcome">Welcome, {{ email }}. Choose a password to activate your account.</p>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-field">
+            <label for="newPassword">New Password</label>
+            <input id="newPassword" type="password" formControlName="newPassword" autocomplete="new-password" />
+          </div>
+          <div class="form-field">
+            <label for="confirmPassword">Confirm Password</label>
+            <input id="confirmPassword" type="password" formControlName="confirmPassword" autocomplete="new-password" />
+            <p *ngIf="form.hasError('passwordMismatch') && form.get('confirmPassword')?.touched" class="auth-error">
+              Passwords do not match.
+            </p>
+          </div>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid || loading">
+            {{ loading ? 'Activating...' : 'Activate Account' }}
+          </button>
+          <p *ngIf="error" class="auth-error">{{ error }}</p>
+        </form>
+      </div>
     </div>
   `
 })
