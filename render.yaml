@@ -1,0 +1,42 @@
+databases:
+  - name: fivetalents-db
+    databaseName: fivetalents
+    user: fivetalents
+    plan: free
+
+services:
+
+  # ── API ───────────────────────────────────────────────────────────────────
+  - type: web
+    name: fivetalents-api
+    env: docker
+    dockerfilePath: ./src/FiveTalents.Api/Dockerfile
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Staging
+      - key: ASPNETCORE_HTTP_PORTS
+        value: 10000
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: fivetalents-db
+          property: connectionString
+      - key: JwtSettings__Secret
+        generateValue: true
+      - key: JwtSettings__Issuer
+        value: FiveTalents
+      - key: JwtSettings__Audience
+        value: FiveTalentsApp
+      - key: JwtSettings__ExpiryHours
+        value: 24
+
+  # ── Angular SPA ───────────────────────────────────────────────────────────
+  # NOTE: if fivetalents-api above gets a different URL than expected
+  # (e.g. fivetalents-api-xxxx.onrender.com), update environment.staging.ts
+  # and AllowedOrigins in appsettings.Staging.json, then push to redeploy.
+  - type: web
+    name: fivetalents-web
+    env: static
+    buildCommand: cd web/five-talents-web && npm ci && npm run build:staging
+    staticPublishPath: web/five-talents-web/dist/five-talents-web/browser
+    pullRequestPreviewsEnabled: false
