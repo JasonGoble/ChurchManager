@@ -1,6 +1,23 @@
 # FiveTalents — Brand & Media Kit
 
-> This document captures the brand positioning, visual identity direction, and product messaging for FiveTalents. It is the canonical reference for tone, narrative, and identity decisions across all public-facing surfaces.
+> This document is the canonical reference for tone, narrative, visual identity, and design decisions across all public-facing surfaces of FiveTalents. Update it when decisions are made; defer to it when they are questioned.
+
+---
+
+## Core Identity
+
+> Faithful stewardship software for the local church.
+
+### Emotional Tone
+
+Reverent · Trustworthy · Calm · Intentional · Pastoral · Technically competent
+
+### Avoid
+
+- Megachurch energy
+- Startup hype or "AI disruption" language
+- Corporate CRM aesthetics
+- "Revolutionize your engagement pipeline" copy
 
 ---
 
@@ -8,30 +25,25 @@
 
 **FiveTalents** — inspired by the Parable of the Talents (Matthew 25:14–30).
 
-The name frames the platform around its core conviction: churches are stewards of people, discipleship, generosity, service, worship, and mission. FiveTalents exists to help them steward those things faithfully and simply.
+The name frames the platform around its core conviction: churches are stewards of people, discipleship, generosity, service, worship, and mission. FiveTalents exists to help them steward those things faithfully and simply. It is a stewardship platform for the local church — not merely church database software.
 
 ---
 
 ## Taglines
 
-### Ministry-focused
-- "Faithful stewardship for growing churches."
+### Recommended
+> **"Faithful stewardship for growing churches."**
+
+### Ministry-focused alternatives
 - "Steward people well."
 - "Helping churches multiply what they've been given."
 - "Tools for faithful ministry."
 - "Church stewardship, reimagined."
 
-### Practical / SaaS
-- "Church management built for ministry."
-- "Modern tools for local churches."
-- "Everything your church needs to organize ministry."
-
 ### Anglican/Reformed tone
 - "Order in service of discipleship."
 - "Supporting the work of the Church."
 - "Faithful systems for faithful ministry."
-
-**Recommended:** "Faithful stewardship for growing churches."
 
 ---
 
@@ -45,7 +57,7 @@ Most church management systems feel corporate, dated, bloated, transactional, or
 
 FiveTalents exists to help churches steward people, discipleship, generosity, service, worship, and mission faithfully and simply.
 
-Not enterprise software. Not "CRM for churches." A ministry platform designed around the life of the local church.
+Not enterprise software. Not "CRM for churches." A ministry platform designed around the rhythms of the local church.
 
 ---
 
@@ -53,24 +65,29 @@ Not enterprise software. Not "CRM for churches." A ministry platform designed ar
 
 ### Primary Market
 - Small-to-mid-sized churches (75–800 members)
-- Liturgical and historically rooted traditions
-- Anglican, Presbyterian, Lutheran, Methodist, Reformed
+- Liturgical and historically rooted traditions: Anglican, Presbyterian, Lutheran, Methodist, Reformed
+- An underserved niche — existing ChMS tools don't serve this market well
 
-This is an underserved niche. The tone should reflect:
-- Trustworthiness, clarity, stability
-- Pastoral warmth and simplicity
-
-Avoid: flashy megachurch branding, "growth hacking" language, startup jargon.
+### Tone for this audience
+Trustworthiness · Clarity · Stability · Pastoral warmth · Simplicity
 
 ---
 
 ## Product Messaging
 
-### Homepage Headline
-> Steward your church faithfully.
+### Homepage Hero
 
-### Subheadline
-> FiveTalents helps churches manage members, communication, giving, events, volunteers, and discipleship with tools designed for ministry — not corporate bureaucracy.
+**Headline:** Steward your church faithfully.
+
+**Subheadline:** FiveTalents helps churches manage people, ministry, communication, giving, and discipleship with tools designed for the local church.
+
+**CTAs:** Request Early Access · Join the Beta
+
+### Feature Sections
+- **Member Care** — Profiles, family relationships, notes, statuses
+- **Worship & Ministry** — Attendance, volunteers, sermons, events
+- **Stewardship** — Giving, pledges, communication
+- **Self-Service** — Member accounts and church directory access
 
 ### Short Boilerplate
 > FiveTalents is a modern church management platform designed to help churches steward people, ministry, and resources faithfully.
@@ -78,48 +95,139 @@ Avoid: flashy megachurch branding, "growth hacking" language, startup jargon.
 ### Long Boilerplate
 > FiveTalents is a free, open-source church management platform built for small-to-mid-sized churches. Inspired by the Parable of the Talents, it gives churches modern tools to manage members, track attendance, coordinate volunteers, record giving, and communicate — without the complexity or cost of enterprise ChMS software. Built by a senior software engineer and Anglican deacon, FiveTalents is designed around the rhythms of real church life.
 
----
+### Voice & Copy — Good Examples
+- "Keep track of your congregation with clarity and care."
+- "Designed for the rhythms of church life."
+- "Simple tools for faithful ministry."
 
-## Visual Identity Direction
-
-### Style
-Modern liturgical — minimal, warm, trustworthy, intentional.
-
-Not: neon gradients, generic SaaS blobs, youth-conference aesthetics.
-
-### Color Palette
-
-| Role | Colors |
-|------|--------|
-| Primary | Deep navy, warm gold, off-white/parchment |
-| Accent | Forest green, burgundy, muted blue-gray |
-
-This communicates: tradition, stewardship, reverence, stability.
-
-### Typography (suggested)
-- **Headlines:** Cinzel, Libre Baskerville, or Cormorant Garamond
-- **Body:** Inter or Source Sans
-
-Liturgical elegance with modern readability.
+### Voice & Copy — Avoid
+- "Revolutionize your engagement pipeline"
+- "Next-generation ministry automation"
+- "AI-powered growth acceleration"
 
 ---
 
-## Logo Concepts
+## Color Palette
 
-1. **Five Coins / Talents** — five circular forms arranged as a cross, church window, or growth motif
-2. **Open Hands** — hands holding light, seed, or coins; stewardship and generosity
-3. **Cathedral Window Geometry** — minimal stained-glass-inspired iconography; modernized Anglican aesthetic
-4. **Wheat + Coins** — harvest, stewardship, kingdom growth
+### Primary
+
+| Role | Name | HEX |
+|------|------|-----|
+| Primary | Midnight Blue | `#1F2A44` |
+| Accent | Steward Gold | `#C8A96B` |
+| Background | Parchment | `#F7F3EB` |
+| Body Text | Charcoal | `#2B2B2B` |
+
+### Secondary
+
+| Role | Name | HEX |
+|------|------|-----|
+| Accent | Forest | `#2F5D50` |
+| Accent | Burgundy | `#6A3B3B` |
+| Neutral | Slate | `#5E6B7A` |
+
+### Why This Works
+
+Communicates liturgical tradition, stability, warmth, seriousness, and trust. Feels Anglican, Presbyterian, and Lutheran without being denomination-locked.
 
 ---
 
-## Product Personality
+## Typography
 
-If FiveTalents were a person:
-- Calm, trustworthy, thoughtful, pastoral
-- Technically competent, understated, deeply practical
+### Headlines
+**Cormorant Garamond** — elegant, ecclesial, readable. Historic without looking archaic. Use for page titles, hero text, section headings.
 
-Not: hype-driven, disruptive, edgy, "AI-first."
+### Body & UI
+**Inter** — modern, extremely readable, excellent UI font. Works beautifully alongside Cormorant. Use for body copy, labels, navigation, forms.
+
+### UI warmth alternative
+**Source Sans 3** — slightly warmer than Inter if a softer feel is needed.
+
+---
+
+## Logo Direction
+
+### Primary (recommended): Five Coins / Cathedral Window
+
+A geometric icon combining five circular "talents" arranged into a cross, cathedral window, or upward-growth form.
+
+Why it works:
+- Communicates stewardship, multiplication, and church identity
+- Modern and minimal
+- Scales to favicon, app icon, mobile app, print bulletin, signage
+
+### Alternative A: Open Hands
+Hands holding five subtle circles or light. Pastoral and warm — risk of becoming cliché.
+
+### Alternative B: Wheat / Vine
+Five grain kernels or vine nodes. Biblical and growth-oriented — less distinctive in software.
+
+### Logo System Required
+- Full horizontal logo
+- Stacked logo
+- Icon-only mark
+- Monochrome version
+- Dark-background version
+
+---
+
+## UI Style Direction
+
+### Keywords
+Spacious · Uncluttered · Calm · Typographic · Card-based · Restrained
+
+### Inspirations
+- Notion
+- Linear
+- Anglican liturgical print design
+- Modern seminary websites
+- Apple Settings
+- Old prayer books modernized
+
+### Not
+- Salesforce
+- Planning Center overload
+- Flashy dashboards
+
+---
+
+## Photography Style
+
+### Use
+- Real churches, candles, books, communion
+- People serving, prayer, small groups
+
+### Avoid
+- Stock-photo pastors with headsets
+- Giant stages
+- Corporate office energy
+
+---
+
+## Deliverables Checklist
+
+### v1 — Immediate
+- [ ] 3 logo concepts
+- [ ] Finalized color palette (CSS variables / design tokens)
+- [ ] Typography specimen
+- [ ] Favicon
+- [ ] Homepage hero mockup
+- [ ] App login screen branding
+
+### v1 — Phase 2
+- [ ] UI component style guide (cards, buttons, forms, tables)
+- [ ] Social preview / Open Graph graphic
+- [ ] GitHub org branding
+- [ ] README hero image
+- [ ] Product screenshots (member detail, giving dashboard, volunteer scheduling)
+- [ ] "Why FiveTalents?" page copy
+- [ ] Founder story
+
+### Design Sprint Order (suggested)
+1. Finalize palette + fonts
+2. Create 3 logo concepts → select one
+3. Homepage hero mockup + login screen mockup
+4. UI component style guide
 
 ---
 
@@ -133,18 +241,6 @@ Not: hype-driven, disruptive, edgy, "AI-first."
 
 ---
 
-## Media Kit Components (to produce)
-
-- [ ] Full logo + icon mark (monochrome, dark/light variants)
-- [ ] Brand color HEX/RGB values
-- [ ] Typography specimen
-- [ ] Product screenshots (member detail, attendance, giving dashboard, volunteer scheduling, sermon archive)
-- [ ] Founder story
-- [ ] "Why FiveTalents?" page copy
-- [ ] Landing page
-
----
-
 ## Founder Context
 
-Built by a senior software engineer and Anglican deacon. That combination is a major credibility differentiator for ministry software — it signals to churches that the product was built by someone who actually understands church life from the inside.
+Built by a senior software engineer and Anglican deacon. That combination is a major credibility differentiator for ministry software — it signals to churches that the product was built by someone who understands church life from the inside, not just as a software problem. Lead with this in the founder story and "About" page.
