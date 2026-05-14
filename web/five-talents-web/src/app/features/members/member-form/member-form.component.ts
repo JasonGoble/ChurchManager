@@ -41,7 +41,7 @@ import { Organization } from '../../../core/models/organization.models';
       </div>
     } @else {
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="cards-grid">
 
           <mat-card>
             <mat-card-header><mat-card-title>Personal Information</mat-card-title></mat-card-header>
@@ -192,12 +192,21 @@ import { Organization } from '../../../core/models/organization.models';
     }
   `,
   styles: [`
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0 16px;
       padding-top: 8px;
       mat-form-field { width: 100%; }
+    }
+    @media (max-width: 767px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .form-grid  { grid-template-columns: 1fr; }
     }
   `]
 })

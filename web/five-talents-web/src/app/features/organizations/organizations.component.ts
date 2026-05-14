@@ -1,4 +1,7 @@
 import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { map } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { MatTree, MatTreeModule } from '@angular/material/tree';
@@ -137,87 +140,121 @@ const LEVEL_COLORS: Record<number, string> = {
         </mat-form-field>
       </div>
 
-      <mat-card>
-        <table mat-table [dataSource]="filteredOrgs()" class="mat-elevation-z0 full-table">
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let o"><strong>{{ o.name }}</strong></td>
-          </ng-container>
-
-          <ng-container matColumnDef="level">
-            <th mat-header-cell *matHeaderCellDef>Level</th>
-            <td mat-cell *matCellDef="let o">
-              <span class="level-badge" [style.background]="levelColor(o.level)">
-                {{ levelName(o.level) }}
-              </span>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="parent">
-            <th mat-header-cell *matHeaderCellDef>Parent</th>
-            <td mat-cell *matCellDef="let o">{{ o.parentName ?? '—' }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="location">
-            <th mat-header-cell *matHeaderCellDef>Location</th>
-            <td mat-cell *matCellDef="let o">
-              {{ [o.city, o.state, o.country].filter(v => !!v).join(', ') || '—' }}
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="members">
-            <th mat-header-cell *matHeaderCellDef>Members</th>
-            <td mat-cell *matCellDef="let o">{{ o.memberCount }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Status</th>
-            <td mat-cell *matCellDef="let o">
-              <span class="status-chip" [class.active]="o.isActive" [class.inactive]="!o.isActive">
-                {{ o.isActive ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let o" style="white-space:nowrap">
-              <button mat-icon-button matTooltip="Edit" (click)="openEditDialog(o.id)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button matTooltip="Settings" (click)="openSettingsDialog(o.id)">
-                <mat-icon>settings</mat-icon>
-              </button>
-              <button mat-icon-button matTooltip="Add child" (click)="openCreateDialogForParent(o)">
-                <mat-icon>add_business</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-          @if (filteredOrgs().length === 0) {
-            <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
-                @if (searchText()) {
-                  No organizations match "{{ searchText() }}"
-                } @else {
-                  No organizations yet. Add your first one.
+      @if (isMobile()) {
+        <!-- Mobile card list -->
+        @if (filteredOrgs().length === 0) {
+          <mat-card class="empty-card">
+            <mat-icon>corporate_fare</mat-icon>
+            <p>{{ searchText() ? 'No organizations match "' + searchText() + '"' : 'No organizations yet.' }}</p>
+          </mat-card>
+        } @else {
+          <div class="mobile-card-list">
+            @for (o of filteredOrgs(); track o.id) {
+              <div class="org-mobile-card">
+                <div class="org-card-main">
+                  <span class="org-card-name">{{ o.name }}</span>
+                  <span class="level-badge" [style.background]="levelColor(o.level)">{{ levelName(o.level) }}</span>
+                </div>
+                @if (o.parentName) {
+                  <div class="org-card-secondary">Under {{ o.parentName }}</div>
                 }
+                @if (o.city || o.state || o.country) {
+                  <div class="org-card-secondary">{{ [o.city, o.state, o.country].filter(v => !!v).join(', ') }}</div>
+                }
+                <div class="org-card-footer">
+                  <span class="status-chip" [class.active]="o.isActive" [class.inactive]="!o.isActive">
+                    {{ o.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                  <div class="org-card-actions">
+                    <button mat-icon-button matTooltip="Edit" (click)="openEditDialog(o.id)"><mat-icon>edit</mat-icon></button>
+                    <button mat-icon-button matTooltip="Settings" (click)="openSettingsDialog(o.id)"><mat-icon>settings</mat-icon></button>
+                    <button mat-icon-button matTooltip="Add child" (click)="openCreateDialogForParent(o)"><mat-icon>add_business</mat-icon></button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      } @else {
+        <!-- Desktop table -->
+        <mat-card>
+          <table mat-table [dataSource]="filteredOrgs()" class="mat-elevation-z0 full-table">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let o"><strong>{{ o.name }}</strong></td>
+            </ng-container>
+            <ng-container matColumnDef="level">
+              <th mat-header-cell *matHeaderCellDef>Level</th>
+              <td mat-cell *matCellDef="let o">
+                <span class="level-badge" [style.background]="levelColor(o.level)">{{ levelName(o.level) }}</span>
               </td>
-            </tr>
-          }
-        </table>
-      </mat-card>
+            </ng-container>
+            <ng-container matColumnDef="parent">
+              <th mat-header-cell *matHeaderCellDef>Parent</th>
+              <td mat-cell *matCellDef="let o">{{ o.parentName ?? '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="location">
+              <th mat-header-cell *matHeaderCellDef>Location</th>
+              <td mat-cell *matCellDef="let o">{{ [o.city, o.state, o.country].filter(v => !!v).join(', ') || '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="members">
+              <th mat-header-cell *matHeaderCellDef>Members</th>
+              <td mat-cell *matCellDef="let o">{{ o.memberCount }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let o">
+                <span class="status-chip" [class.active]="o.isActive" [class.inactive]="!o.isActive">
+                  {{ o.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let o" style="white-space:nowrap">
+                <button mat-icon-button matTooltip="Edit" (click)="openEditDialog(o.id)"><mat-icon>edit</mat-icon></button>
+                <button mat-icon-button matTooltip="Settings" (click)="openSettingsDialog(o.id)"><mat-icon>settings</mat-icon></button>
+                <button mat-icon-button matTooltip="Add child" (click)="openCreateDialogForParent(o)"><mat-icon>add_business</mat-icon></button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            @if (filteredOrgs().length === 0) {
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+                  {{ searchText() ? 'No organizations match "' + searchText() + '"' : 'No organizations yet. Add your first one.' }}
+                </td>
+              </tr>
+            }
+          </table>
+        </mat-card>
+      }
     }
   `,
   styles: [`
     .page-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
     }
     .page-header h1 { margin: 0; font-size: 24px; font-weight: 400; color: #333; }
-    .header-actions { display: flex; align-items: center; }
+    .header-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 767px) {
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .header-actions mat-button-toggle-group { overflow-x: auto; max-width: 100%; }
+    }
+
+    /* Mobile card list */
+    .mobile-card-list { display: flex; flex-direction: column; gap: 8px; }
+    .org-mobile-card {
+      background: #fff; border-radius: 8px; padding: 14px 16px;
+      box-shadow: 0 1px 4px rgba(31,42,68,0.07);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .org-card-main { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .org-card-name { font-weight: 500; font-size: 15px; color: #1F2A44; }
+    .org-card-secondary { font-size: 13px; color: #5E6B7A; }
+    .org-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
+    .org-card-actions { display: flex; }
     .spinner-center { display: flex; justify-content: center; padding: 64px; }
     .empty-card {
       display: flex; flex-direction: column; align-items: center;
@@ -264,6 +301,12 @@ const LEVEL_COLORS: Record<number, string> = {
 export class OrganizationsComponent implements OnInit {
   private orgService = inject(OrganizationService);
   private dialog = inject(MatDialog);
+  private bp = inject(BreakpointObserver);
+
+  isMobile = toSignal(
+    this.bp.observe('(max-width: 767px)').pipe(map(r => r.matches)),
+    { initialValue: false }
+  );
 
   viewMode = signal<'tree' | 'list'>('tree');
   loading = signal(false);
@@ -313,7 +356,7 @@ export class OrganizationsComponent implements OnInit {
   }
 
   levelIndent(level: number): number {
-    return (level - 1) * 32;
+    return (level - 1) * (this.isMobile() ? 16 : 32);
   }
 
   levelName(level: number): string {
@@ -331,7 +374,7 @@ export class OrganizationsComponent implements OnInit {
 
   openCreateDialog(parentNode?: OrganizationTree) {
     const ref = this.dialog.open(OrganizationFormDialogComponent, {
-      width: '620px',
+      width: '620px', maxWidth: '95vw',
       data: {
         organization: parentNode
           ? { parentOrganizationId: parentNode.id, level: parentNode.level + 1 }
@@ -345,7 +388,7 @@ export class OrganizationsComponent implements OnInit {
 
   openCreateDialogForParent(org: Organization) {
     const ref = this.dialog.open(OrganizationFormDialogComponent, {
-      width: '620px',
+      width: '620px', maxWidth: '95vw',
       data: {
         organization: { parentOrganizationId: org.id, level: org.level + 1 },
         levels: this.levels(),
@@ -359,7 +402,7 @@ export class OrganizationsComponent implements OnInit {
     const org = this.organizations().find(o => o.id === id);
     if (!org) return;
     const ref = this.dialog.open(OrganizationFormDialogComponent, {
-      width: '620px',
+      width: '620px', maxWidth: '95vw',
       data: { organization: org, levels: this.levels(), parentOrganizations: this.organizations() },
     });
     ref.afterClosed().subscribe(saved => { if (saved) this.loadData(); });
@@ -368,7 +411,7 @@ export class OrganizationsComponent implements OnInit {
   openSettingsDialog(id: number) {
     const org = this.organizations().find(o => o.id === id);
     const ref = this.dialog.open(OrganizationSettingsDialogComponent, {
-      width: '580px',
+      width: '580px', maxWidth: '95vw',
       data: { organizationId: id, orgName: org?.name ?? '' },
     });
     ref.afterClosed().subscribe(saved => { if (saved) this.loadData(); });

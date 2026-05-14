@@ -221,10 +221,11 @@ const STATUSES: { value: GroupStatus; label: string }[] = [
     </mat-dialog-actions>
   `,
   styles: [`
-    mat-dialog-content { min-width: 560px; padding-top: 8px; }
+    mat-dialog-content { padding-top: 8px; }
     .tab-content { padding: 20px 4px 8px; display: flex; flex-direction: column; gap: 4px; }
     .full-width { width: 100%; }
     .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .row-2 { grid-template-columns: 1fr; } }
     .checkbox-field { display: flex; align-items: center; padding-top: 8px; }
     .type-dot {
       display: inline-block; width: 10px; height: 10px;
