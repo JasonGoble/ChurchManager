@@ -1,24 +1,68 @@
 @use '@angular/material' as mat;
 
+// ─── Design Tokens ───────────────────────────────────────────────────────────
+
+:root {
+  // Primary palette
+  --color-midnight:  #1F2A44;
+  --color-gold:      #C8A96B;
+  --color-parchment: #F7F3EB;
+  --color-charcoal:  #2B2B2B;
+
+  // Secondary palette
+  --color-forest:    #2F5D50;
+  --color-burgundy:  #6A3B3B;
+  --color-slate:     #5E6B7A;
+
+  // Sidebar-specific
+  --color-sidebar-text:         rgba(255, 255, 255, 0.85);
+  --color-sidebar-text-active:  #ffffff;
+  --color-sidebar-hover:        rgba(255, 255, 255, 0.08);
+  --color-sidebar-active-bg:    rgba(200, 169, 107, 0.15);
+  --color-sidebar-border:       rgba(255, 255, 255, 0.12);
+
+  // Typography
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+
+  // Border radius
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+// ─── Angular Material Theme ───────────────────────────────────────────────────
+
 html {
   color-scheme: light;
   @include mat.theme((
     color: (
-      primary: mat.$violet-palette,
+      primary:  mat.$violet-palette,
       tertiary: mat.$azure-palette,
     ),
-    typography: Roboto,
+    typography: Inter,
     density: 0,
   ));
 }
+
+// ─── Reset & Base ─────────────────────────────────────────────────────────────
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: Roboto, sans-serif;
-  background: #f5f5f5;
+  font-family: var(--font-body);
+  background: var(--color-parchment);
+  color: var(--color-charcoal);
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--color-midnight);
+}
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
 
 .app-layout {
   display: flex;
@@ -26,18 +70,24 @@ body {
   overflow: hidden;
 }
 
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+
 .sidebar {
   width: 240px;
-  background: #3f51b5;
-  color: white;
+  background: var(--color-midnight);
+  color: var(--color-sidebar-text);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
 
   .logo {
     padding: 20px 16px;
-    font-size: 18px;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-gold);
+    border-bottom: 1px solid var(--color-sidebar-border);
   }
 
   ul {
@@ -50,17 +100,18 @@ body {
     li a {
       display: block;
       padding: 12px 16px;
-      color: rgba(255,255,255,0.85);
+      color: var(--color-sidebar-text);
       text-decoration: none;
       font-size: 14px;
       border-left: 3px solid transparent;
       transition: background 0.15s;
 
-      &:hover { background: rgba(255,255,255,0.1); }
+      &:hover { background: var(--color-sidebar-hover); }
+
       &.active {
-        background: rgba(255,255,255,0.15);
-        border-left-color: white;
-        color: white;
+        background: var(--color-sidebar-active-bg);
+        border-left-color: var(--color-gold);
+        color: var(--color-sidebar-text-active);
         font-weight: 500;
       }
     }
@@ -68,23 +119,26 @@ body {
 
   .user-info {
     padding: 12px 16px;
-    border-top: 1px solid rgba(255,255,255,0.15);
+    border-top: 1px solid var(--color-sidebar-border);
     font-size: 13px;
 
     span { display: block; margin-bottom: 8px; opacity: 0.85; }
 
     button {
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.5);
-      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: var(--color-sidebar-text-active);
       padding: 4px 12px;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
+      font-family: var(--font-body);
       font-size: 12px;
-      &:hover { background: rgba(255,255,255,0.1); }
+      &:hover { background: var(--color-sidebar-hover); }
     }
   }
 }
+
+// ─── Content Area ─────────────────────────────────────────────────────────────
 
 .content {
   flex: 1;
@@ -98,8 +152,16 @@ body {
   justify-content: space-between;
   margin-bottom: 24px;
 
-  h1 { margin: 0; font-size: 24px; font-weight: 400; color: #333; }
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--color-midnight);
+  }
 }
+
+// ─── Filters & Tables ─────────────────────────────────────────────────────────
 
 .filter-bar {
   display: flex;
@@ -112,6 +174,8 @@ body {
 }
 
 .mat-elevation-z2 { width: 100%; }
+
+// ─── Status Chips ─────────────────────────────────────────────────────────────
 
 .status-chip {
   padding: 2px 10px;
