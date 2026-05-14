@@ -175,6 +175,116 @@ h1, h2, h3, h4, h5, h6 {
 
 .mat-elevation-z2 { width: 100%; }
 
+// ─── Auth Pages ───────────────────────────────────────────────────────────────
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-parchment);
+  padding: 24px;
+}
+
+.auth-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 2px 20px rgba(31, 42, 68, 0.08);
+}
+
+.auth-brand {
+  text-align: center;
+  margin-bottom: 32px;
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: 38px;
+    font-weight: 600;
+    color: var(--color-midnight);
+    margin: 0 0 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--color-slate);
+    margin: 0 0 20px;
+    font-style: italic;
+  }
+
+  .divider {
+    width: 36px;
+    height: 2px;
+    background: var(--color-gold);
+    margin: 0 auto;
+  }
+}
+
+.auth-welcome {
+  font-size: 14px;
+  color: var(--color-slate);
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+
+.form-field {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-slate);
+    margin-bottom: 6px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--color-charcoal);
+    background: #ffffff;
+    border: 1.5px solid #ddd6c8;
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color 0.15s;
+
+    &:focus { border-color: var(--color-gold); }
+  }
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--color-midnight);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) { background: #2a3a5c; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.auth-error {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--color-burgundy);
+  text-align: center;
+}
+
 // ─── Status Chips ─────────────────────────────────────────────────────────────
 
 .status-chip {
