@@ -1,4 +1,4 @@
-# ChurchManager — Claude Working Guide
+﻿# FiveTalents — Claude Working Guide
 
 Project conventions and technical gotchas for AI-assisted development on this repo.
 
@@ -14,14 +14,14 @@ Project conventions and technical gotchas for AI-assisted development on this re
 ```powershell
 # Migrations (dotnet-ef is not on PATH — invoke via $env:USERPROFILE)
 $ef = "$env:USERPROFILE\.dotnet\tools\dotnet-ef.exe"
-& $ef migrations add <Name> --project src/ChurchManager.Infrastructure --startup-project src/ChurchManager.Api
-& $ef database update --project src/ChurchManager.Infrastructure --startup-project src/ChurchManager.Api
+& $ef migrations add <Name> --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
+& $ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
 
 # API
-dotnet run --project src/ChurchManager.Api   # http://localhost:5290
+dotnet run --project src/FiveTalents.Api   # http://localhost:5290
 
 # Frontend
-cd web/church-manager-web && npm start       # http://localhost:4200
+cd web/five-talents-web && npm start       # http://localhost:4200
 
 # Email (dev) — start Mailpit before the API
 mailpit                                       # UI at http://localhost:8025

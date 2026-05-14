@@ -1,4 +1,4 @@
-# ADR-0001: Clean Architecture Layering
+﻿# ADR-0001: Clean Architecture Layering
 
 **Status:** Accepted  
 **Date:** 2026-05-07
@@ -24,5 +24,5 @@ Domain → Application → Infrastructure
 ## Consequences
 
 - Application layer commands and queries are portable and testable without spinning up EF or Identity.
-- Every cross-layer dependency must go through an interface defined in Application; no `using ChurchManager.Infrastructure` in Application projects.
+- Every cross-layer dependency must go through an interface defined in Application; no `using FiveTalents.Infrastructure` in Application projects.
 - Adding a new infrastructure capability (e.g., push notifications) requires: new interface in Application, new implementation in Infrastructure, registered in `DependencyInjection.cs`.

@@ -1,6 +1,0 @@
-@ChurchManager.Api_HostAddress = http://localhost:5290
-
-GET {{ChurchManager.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

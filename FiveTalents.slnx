@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FiveTalents.Api/FiveTalents.Api.csproj" />
+    <Project Path="src/FiveTalents.Application/FiveTalents.Application.csproj" />
+    <Project Path="src/FiveTalents.Domain/FiveTalents.Domain.csproj" />
+    <Project Path="src/FiveTalents.Infrastructure/FiveTalents.Infrastructure.csproj" />
+  </Folder>
+</Solution>

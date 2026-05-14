@@ -1,6 +1,6 @@
-# Architecture Decision Records
+﻿# Architecture Decision Records
 
-This directory contains Architecture Decision Records (ADRs) for ChurchManager — lightweight documents that capture the *why* behind significant technical decisions as they are made.
+This directory contains Architecture Decision Records (ADRs) for FiveTalents — lightweight documents that capture the *why* behind significant technical decisions as they are made.
 
 Each ADR is numbered sequentially and never edited after acceptance. If a decision is reversed or superseded, a new ADR is written that references the old one.
 
@@ -18,6 +18,7 @@ Each ADR is numbered sequentially and never edited after acceptance. If a decisi
 | [0008](0008-member-invite-flow.md) | Member Invite Flow via Identity Password Reset Token | Accepted |
 | [0009](0009-angular-signals-first.md) | Angular Signals-First State Management | Accepted |
 | [0010](0010-systemadmin-role-enforcement.md) | SystemAdmin Role Enforcement for Destructive Member-Account Operations | Accepted |
+| [0011](0011-project-rename-churchmanager-to-fivetalents.md) | Project Rename — ChurchManager → FiveTalents | Accepted |
 
 ## Template
 

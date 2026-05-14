@@ -1,8 +1,0 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="src/ChurchManager.Api/ChurchManager.Api.csproj" />
-    <Project Path="src/ChurchManager.Application/ChurchManager.Application.csproj" />
-    <Project Path="src/ChurchManager.Domain/ChurchManager.Domain.csproj" />
-    <Project Path="src/ChurchManager.Infrastructure/ChurchManager.Infrastructure.csproj" />
-  </Folder>
-</Solution>
