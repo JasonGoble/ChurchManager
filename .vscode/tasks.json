@@ -29,26 +29,24 @@
       "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" }
     },
     {
+      "label": "start: db",
+      "type": "shell",
+      "command": "docker compose up db -d --wait",
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
       "label": "pre-launch: full stack",
-      "dependsOn": ["build: api", "start: mailpit"],
+      "dependsOn": ["build: api", "start: mailpit", "start: db"],
       "dependsOrder": "parallel",
       "group": "build"
     },
     {
       "label": "start: mailpit",
       "type": "shell",
-      "command": "mailpit",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "mailpit",
-        "pattern": { "regexp": "^$" },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "accessible via"
-        }
-      },
-      "presentation": { "reveal": "silent", "panel": "dedicated", "group": "servers" }
+      "command": "docker compose up mailpit -d --wait",
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
     },
     {
       "label": "serve: angular",

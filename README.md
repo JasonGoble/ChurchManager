@@ -52,25 +52,24 @@ FiveTalents/
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Node.js 22+ / npm 11+](https://nodejs.org)
-- [PostgreSQL 16+](https://www.postgresql.org)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) — runs PostgreSQL and Mailpit
 - [Angular CLI](https://angular.io/cli) — `npm install -g @angular/cli`
-- **Email (dev)** — [Mailpit](https://mailpit.axllent.org) catches outgoing emails locally (`winget install axllent.mailpit`). Web UI at `http://localhost:8025`. For production, configure a real SMTP provider in `appsettings.json` under `SmtpSettings`.
 
 ## Getting Started
 
-### 1. Database
+### 1. Start backing services (database + email)
 
-Create a PostgreSQL database and update the connection string in `src/FiveTalents.Api/appsettings.json`:
-
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Port=5432;Database=FiveTalents;Username=postgres;Password=yourpassword"
-}
+```powershell
+docker compose up db mailpit -d --wait
 ```
+
+This starts PostgreSQL (port 5433) and Mailpit (port 1025 / UI at `http://localhost:8025`). Migrations and seed data are applied automatically on first API startup.
+
+> **Note:** Port 5433 is used instead of 5432 to avoid conflicts with any locally installed PostgreSQL.
 
 ### 2. JWT Secret
 
-Replace the placeholder secret in `appsettings.json` with a strong random key (≥ 32 characters):
+Replace the placeholder secret in `src/FiveTalents.Api/appsettings.json` with a strong random key (≥ 32 characters):
 
 ```json
 "JwtSettings": {
@@ -78,14 +77,7 @@ Replace the placeholder secret in `appsettings.json` with a strong random key (�
 }
 ```
 
-### 3. Run Migrations
-
-```powershell
-$ef = "$env:USERPROFILE\.dotnet\tools\dotnet-ef.exe"
-& $ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
-```
-
-### 4. Start the API
+### 3. Start the API
 
 ```powershell
 dotnet run --project src/FiveTalents.Api
@@ -93,7 +85,7 @@ dotnet run --project src/FiveTalents.Api
 # OpenAPI docs: http://localhost:5290/openapi/v1.json
 ```
 
-### 5. Start the Frontend
+### 4. Start the Frontend
 
 ```powershell
 cd web/five-talents-web
@@ -102,15 +94,9 @@ npm start
 # App running at http://localhost:4200
 ```
 
-### 6. Email (optional, for invite flow)
+### VS Code (recommended)
 
-For local development, start Mailpit before running the API. Outgoing emails appear at `http://localhost:8025`.
-
-```powershell
-mailpit
-```
-
-When using **F5** in VS Code, Mailpit starts automatically alongside the API.
+Press **F5** (or select **Full Stack** from the Run & Debug panel). VS Code will start Docker services, build the API, and launch both servers with Chrome and .NET debuggers attached.
 
 For production, set real SMTP credentials in `appsettings.json`:
 
