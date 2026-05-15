@@ -13,7 +13,11 @@ public class GetMemberByIdQueryHandler(IApplicationDbContext db) : IRequestHandl
 {
     public async Task<MemberDto> Handle(GetMemberByIdQuery request, CancellationToken cancellationToken)
     {
-        var member = await db.Members.FirstOrDefaultAsync(m => m.Id == request.Id && !m.IsDeleted, cancellationToken)
+        var member = await db.Members
+            .Include(m => m.Addresses).ThenInclude(a => a.ContactType)
+            .Include(m => m.Emails).ThenInclude(e => e.ContactType)
+            .Include(m => m.Phones).ThenInclude(p => p.ContactType)
+            .FirstOrDefaultAsync(m => m.Id == request.Id && !m.IsDeleted, cancellationToken)
             ?? throw new NotFoundException(nameof(Member), request.Id);
 
         var orgName = await db.Organizations
@@ -21,13 +25,6 @@ public class GetMemberByIdQueryHandler(IApplicationDbContext db) : IRequestHandl
             .Select(o => o.Name)
             .FirstOrDefaultAsync(cancellationToken);
 
-        return new MemberDto(
-            member.Id, member.FirstName, member.LastName, member.Email, member.PhoneNumber,
-            member.DateOfBirth, member.Gender, member.MaritalStatus, member.Status,
-            member.JoinDate, member.ProfilePhotoUrl,
-            member.Address, member.City, member.State, member.PostalCode, member.Country,
-            member.Notes, member.OrganizationId, orgName,
-            member.UserId, member.UserId != null,
-            member.SharePhoneWithNetwork, member.ShareEmailWithNetwork, member.ShareAddressWithNetwork);
+        return MemberMappings.ToDto(member, orgName);
     }
 }

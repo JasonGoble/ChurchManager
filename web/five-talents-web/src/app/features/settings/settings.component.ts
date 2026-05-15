@@ -5,6 +5,6 @@ import { CommonModule } from '@angular/common';
   selector: 'app-settings',
   standalone: true,
   imports: [CommonModule],
-  template: `<h1>Settings</h1><p>Coming soon — this feature is scaffolded and ready to implement.</p>`
+  templateUrl: './settings.component.html'
 })
 export class SettingsComponent {}

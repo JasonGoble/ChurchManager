@@ -1,0 +1,51 @@
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px 16px;
+  padding: 8px 0;
+  font-size: 14px;
+}
+.label { color: #666; font-weight: 500; }
+mat-card { margin-top: 0; }
+mat-card-content { padding-top: 8px; }
+
+.member-header { display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px; }
+.member-header-top { display: flex; align-items: center; justify-content: space-between; }
+.member-name { margin: 0 0 0 8px; }
+.page-header-actions { display: flex; gap: 8px; }
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 14px;
+}
+.contact-type { color: #666; font-weight: 500; min-width: 72px; }
+.contact-value { flex: 1; }
+.primary-badge {
+  font-size: 11px;
+  background: #e8f5e9;
+  color: #388e3c;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.mobile-badge {
+  font-size: 11px;
+  background: #e3f2fd;
+  color: #1565c0;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.address-block { padding: 4px 0; }
+.empty-hint { color: #888; font-size: 14px; padding: 4px 0; margin: 0; }
+
+@media (max-width: 767px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .detail-grid { grid-template-columns: 120px 1fr; }
+}

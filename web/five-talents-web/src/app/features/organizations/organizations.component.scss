@@ -1,0 +1,64 @@
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.page-header h1 { margin: 0; font-size: 24px; font-weight: 400; color: #333; }
+.header-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 767px) {
+  .page-header { flex-direction: column; align-items: flex-start; }
+  .header-actions mat-button-toggle-group { overflow-x: auto; max-width: 100%; }
+}
+
+/* Mobile card list */
+.mobile-card-list { display: flex; flex-direction: column; gap: 8px; }
+.org-mobile-card {
+  background: #fff; border-radius: 8px; padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(31,42,68,0.07);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.org-card-main { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.org-card-name { font-weight: 500; font-size: 15px; color: #1F2A44; }
+.org-card-secondary { font-size: 13px; color: #5E6B7A; }
+.org-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
+.org-card-actions { display: flex; }
+.spinner-center { display: flex; justify-content: center; padding: 64px; }
+.empty-card {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px; color: #aaa; gap: 12px;
+}
+.empty-card mat-icon { font-size: 48px; width: 48px; height: 48px; }
+
+/* Tree */
+.org-tree { background: transparent; width: 100%; }
+.tree-node-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.tree-row {
+  display: flex; align-items: center; flex: 1; min-width: 0; min-height: 48px;
+  padding-top: 4px; padding-right: 8px; padding-bottom: 4px;
+  border-bottom: 1px solid #f5f5f5;
+}
+.tree-row:hover { background: #fafafa; }
+.parent-row { font-weight: 500; }
+.child-group { border-left: 2px solid #e0e0e0; padding-bottom: 2px; }
+.tree-hidden { display: none; }
+.tree-spacer { flex: 1; }
+.org-icon { color: #888; margin-right: 8px; font-size: 20px; width: 20px; height: 20px; }
+.org-name { font-size: 14px; margin-right: 8px; }
+
+.level-badge {
+  font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  font-weight: 500; margin-right: 6px;
+}
+.inactive-badge {
+  font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  background: #f5f5f5; color: #999; font-weight: 500;
+}
+
+/* List */
+.filter-bar { margin-bottom: 16px; }
+.full-table { width: 100%; }
+.no-data { padding: 24px; text-align: center; color: #aaa; }
+.status-chip {
+  padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;
+}
+.status-chip.active   { background: #e8f5e9; color: #2e7d32; }
+.status-chip.inactive { background: #fafafa; color: #757575; }

@@ -38,7 +38,7 @@ FiveTalents/
 | Module | Status |
 |--------|--------|
 | Organizations | ✅ Hierarchy tree with settings |
-| Members | ✅ Profiles, privacy controls, user account linking & invites, admin-only status & org management (move between orgs) |
+| Members | ✅ Profiles, multiple addresses/emails/phones (typed + primary flag), privacy controls, user account linking & invites, admin-only status & org management (move between orgs) |
 | Groups & Ministries | ✅ Types, leaders, schedules, capacity |
 | User Accounts | ✅ JWT auth, end-to-end invite & account setup flow, My Profile page |
 | Attendance | 🔲 Planned |

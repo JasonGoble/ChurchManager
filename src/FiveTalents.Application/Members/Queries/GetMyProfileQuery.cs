@@ -18,6 +18,9 @@ public class GetMyProfileQueryHandler(
             return null;
 
         var member = await db.Members
+            .Include(m => m.Addresses).ThenInclude(a => a.ContactType)
+            .Include(m => m.Emails).ThenInclude(e => e.ContactType)
+            .Include(m => m.Phones).ThenInclude(p => p.ContactType)
             .Where(m => m.UserId == currentUser.UserId && !m.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -28,12 +31,6 @@ public class GetMyProfileQueryHandler(
             .Select(o => o.Name)
             .FirstOrDefaultAsync(cancellationToken);
 
-        return new MemberDto(
-            member.Id, member.FirstName, member.LastName, member.Email, member.PhoneNumber,
-            member.DateOfBirth, member.Gender, member.MaritalStatus, member.Status, member.JoinDate,
-            member.ProfilePhotoUrl, member.Address, member.City, member.State, member.PostalCode, member.Country,
-            member.Notes, member.OrganizationId, orgName,
-            member.UserId, true,
-            member.SharePhoneWithNetwork, member.ShareEmailWithNetwork, member.ShareAddressWithNetwork);
+        return MemberMappings.ToDto(member, orgName);
     }
 }

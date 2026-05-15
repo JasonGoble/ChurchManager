@@ -5,6 +5,6 @@ import { CommonModule } from '@angular/common';
   selector: 'app-giving',
   standalone: true,
   imports: [CommonModule],
-  template: `<h1>Giving & Donations</h1><p>Coming soon — this feature is scaffolded and ready to implement.</p>`
+  templateUrl: './giving.component.html'
 })
 export class GivingComponent {}

@@ -24,6 +24,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Member> Members => Set<Member>();
     public DbSet<MemberFamily> MemberFamilies => Set<MemberFamily>();
     public DbSet<MemberTag> MemberTags => Set<MemberTag>();
+    public DbSet<ContactType> ContactTypes => Set<ContactType>();
+    public DbSet<MemberAddress> MemberAddresses => Set<MemberAddress>();
+    public DbSet<MemberEmail> MemberEmails => Set<MemberEmail>();
+    public DbSet<MemberPhone> MemberPhones => Set<MemberPhone>();
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<GroupType> GroupTypes => Set<GroupType>();
     public DbSet<GroupMember> GroupMembers => Set<GroupMember>();
@@ -113,6 +117,35 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .WithMany()
             .HasForeignKey(r => r.OrganizationId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // ContactType — no soft-delete filter; seed default types (static CreatedAt required for deterministic model)
+        var seedDate = new DateTime(2026, 5, 14, 0, 0, 0, DateTimeKind.Utc);
+        builder.Entity<ContactType>().HasData(
+            new ContactType { Id = 1,  Category = ContactTypeCategory.Address, Name = "Home",     SortOrder = 10, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 2,  Category = ContactTypeCategory.Address, Name = "Work",     SortOrder = 20, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 3,  Category = ContactTypeCategory.Address, Name = "Mailing",  SortOrder = 30, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 4,  Category = ContactTypeCategory.Address, Name = "Other",    SortOrder = 40, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 5,  Category = ContactTypeCategory.Email,   Name = "Personal", SortOrder = 10, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 6,  Category = ContactTypeCategory.Email,   Name = "Work",     SortOrder = 20, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 7,  Category = ContactTypeCategory.Email,   Name = "Other",    SortOrder = 30, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 8,  Category = ContactTypeCategory.Phone,   Name = "Home",     SortOrder = 10, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 9,  Category = ContactTypeCategory.Phone,   Name = "Work",     SortOrder = 20, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 10, Category = ContactTypeCategory.Phone,   Name = "Mobile",   SortOrder = 30, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 11, Category = ContactTypeCategory.Phone,   Name = "Other",    SortOrder = 40, IsActive = true, CreatedAt = seedDate }
+        );
+
+        // MemberAddress / MemberEmail / MemberPhone cascade-delete with member
+        builder.Entity<MemberAddress>()
+            .HasOne(a => a.Member).WithMany(m => m.Addresses)
+            .HasForeignKey(a => a.MemberId).OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<MemberEmail>()
+            .HasOne(e => e.Member).WithMany(m => m.Emails)
+            .HasForeignKey(e => e.MemberId).OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<MemberPhone>()
+            .HasOne(p => p.Member).WithMany(m => m.Phones)
+            .HasForeignKey(p => p.MemberId).OnDelete(DeleteBehavior.Cascade);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

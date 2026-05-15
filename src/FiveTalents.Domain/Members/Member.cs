@@ -12,20 +12,12 @@ public class Member : AuditableEntity
     public string LastName { get; set; } = default!;
     public string? MiddleName { get; set; }
     public string FullName => $"{FirstName} {LastName}";
-    public string? Email { get; set; }
-    public string? PhoneNumber { get; set; }
-    public string? AlternatePhone { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public Gender? Gender { get; set; }
     public MaritalStatus? MaritalStatus { get; set; }
     public MemberStatus Status { get; set; } = MemberStatus.Active;
     public DateTime? JoinDate { get; set; }
     public DateTime? BaptismDate { get; set; }
-    public string? Address { get; set; }
-    public string? City { get; set; }
-    public string? State { get; set; }
-    public string? PostalCode { get; set; }
-    public string? Country { get; set; }
     public string? ProfilePhotoUrl { get; set; }
     public string? Occupation { get; set; }
     public string? Employer { get; set; }
@@ -39,4 +31,7 @@ public class Member : AuditableEntity
     public int? FamilyId { get; set; }
     public MemberFamily? Family { get; set; }
     public ICollection<MemberTag> Tags { get; set; } = [];
+    public ICollection<MemberAddress> Addresses { get; set; } = [];
+    public ICollection<MemberEmail> Emails { get; set; } = [];
+    public ICollection<MemberPhone> Phones { get; set; } = [];
 }

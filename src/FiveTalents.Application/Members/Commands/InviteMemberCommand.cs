@@ -17,22 +17,27 @@ public class InviteMemberCommandHandler(
 {
     public async Task Handle(InviteMemberCommand request, CancellationToken cancellationToken)
     {
-        var member = await db.Members.FirstOrDefaultAsync(m => m.Id == request.MemberId, cancellationToken)
+        var member = await db.Members
+            .Include(m => m.Emails)
+            .FirstOrDefaultAsync(m => m.Id == request.MemberId, cancellationToken)
             ?? throw new NotFoundException("Member", request.MemberId);
 
-        if (string.IsNullOrWhiteSpace(member.Email))
+        var primaryEmail = member.Emails.FirstOrDefault(e => e.IsPrimary)?.Email
+                        ?? member.Emails.OrderBy(e => e.Id).FirstOrDefault()?.Email;
+
+        if (string.IsNullOrWhiteSpace(primaryEmail))
             throw new InvalidOperationException("Member does not have an email address. Add an email before sending an invite.");
 
         if (member.UserId != null)
             throw new InvalidOperationException("Member already has a linked user account.");
 
-        var existingUser = await userService.FindByEmailAsync(member.Email);
+        var existingUser = await userService.FindByEmailAsync(primaryEmail);
         string userId;
 
         if (existingUser != null)
         {
             if (existingUser.MemberId != null && existingUser.MemberId != member.Id)
-                throw new InvalidOperationException($"A user with email '{member.Email}' is already linked to a different member.");
+                throw new InvalidOperationException($"A user with email '{primaryEmail}' is already linked to a different member.");
 
             userId = existingUser.Id;
             if (existingUser.MemberId == null)
@@ -41,7 +46,7 @@ public class InviteMemberCommandHandler(
         else
         {
             userId = await userService.CreateUserForMemberAsync(
-                member.Email, member.FirstName, member.LastName, member.Id, member.OrganizationId);
+                primaryEmail, member.FirstName, member.LastName, member.Id, member.OrganizationId);
         }
 
         member.UserId = userId;
@@ -50,12 +55,12 @@ public class InviteMemberCommandHandler(
         var token = await userService.GenerateInviteTokenAsync(userId);
         var encodedToken = Uri.EscapeDataString(token);
         var inviteUrl = $"{request.AcceptBaseUrl.TrimEnd('/')}/auth/setup-account" +
-                        $"?email={Uri.EscapeDataString(member.Email)}&token={encodedToken}";
+                        $"?email={Uri.EscapeDataString(primaryEmail)}&token={encodedToken}";
 
         try
         {
             await emailService.SendAsync(
-                to: member.Email,
+                to: primaryEmail,
                 subject: "You've been invited to FiveTalents",
                 body: $"Hello {member.FirstName},\n\nYou have been invited to access FiveTalents.\n\n" +
                       $"Click the link below to set up your account:\n\n{inviteUrl}\n\n" +
@@ -65,7 +70,7 @@ public class InviteMemberCommandHandler(
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Invite email could not be sent to {Email}. Account was created and linked.", member.Email);
+            logger.LogWarning(ex, "Invite email could not be sent to {Email}. Account was created and linked.", primaryEmail);
         }
     }
 }

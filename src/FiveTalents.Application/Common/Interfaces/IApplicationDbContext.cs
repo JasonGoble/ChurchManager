@@ -20,6 +20,10 @@ public interface IApplicationDbContext
     DbSet<Member> Members { get; }
     DbSet<MemberFamily> MemberFamilies { get; }
     DbSet<MemberTag> MemberTags { get; }
+    DbSet<ContactType> ContactTypes { get; }
+    DbSet<MemberAddress> MemberAddresses { get; }
+    DbSet<MemberEmail> MemberEmails { get; }
+    DbSet<MemberPhone> MemberPhones { get; }
     DbSet<Group> Groups { get; }
     DbSet<GroupType> GroupTypes { get; }
     DbSet<GroupMember> GroupMembers { get; }

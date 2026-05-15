@@ -1,0 +1,61 @@
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+  padding-top: 8px;
+  mat-form-field { width: 100%; }
+}
+mat-card-header { display: flex; align-items: center; justify-content: space-between; }
+.card-header-action { margin-left: auto; }
+
+.contact-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+}
+.type-field { width: 130px; flex-shrink: 0; }
+.value-field { flex: 1; min-width: 160px; }
+.contact-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 8px;
+}
+
+.address-header {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px 0 12px;
+}
+.address-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+  mat-form-field { width: 100%; }
+}
+
+.empty-hint { color: #888; font-size: 14px; padding: 8px 0; }
+
+// Override ngx-material-intl-tel-input to match outline form field appearance
+::ng-deep ngx-material-intl-tel-input {
+  --mat-outline-tel-form-background: transparent;
+}
+
+@media (max-width: 767px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .form-grid  { grid-template-columns: 1fr; }
+  .address-fields { grid-template-columns: 1fr; }
+  .contact-row { flex-direction: column; padding-bottom: 4px; }
+  .contact-row-actions { padding-top: 4px; }
+  .type-field, .value-field { width: 100%; }
+  mat-divider { --mat-divider-color: rgba(0, 0, 0, 0.3); margin-bottom: 16px; }
+}

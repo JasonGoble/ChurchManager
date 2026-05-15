@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { PaginatedResult } from '../models/api.models';
-import { CreateMemberRequest, Member, MemberStatus, MemberSummary } from '../models/member.models';
+import { CreateMemberRequest, Member, MemberStatus, MemberSummary, UpdateMemberRequest } from '../models/member.models';
 
 @Injectable({ providedIn: 'root' })
 export class MemberService {
@@ -32,7 +32,7 @@ export class MemberService {
     return this.http.post<{ id: number }>(this.baseUrl, member);
   }
 
-  update(id: number, member: Partial<Member>) {
+  update(id: number, member: UpdateMemberRequest | Partial<Member>) {
     return this.http.put(`${this.baseUrl}/${id}`, { id, ...member });
   }
 

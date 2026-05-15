@@ -1,0 +1,16 @@
+.clickable-row { cursor: pointer; }
+.clickable-row:hover { background: #f5f5f5; }
+td.mat-column-actions { width: 80px; text-align: right; }
+
+.mobile-card-list { display: flex; flex-direction: column; gap: 8px; }
+.member-card {
+  background: #fff; border-radius: 8px; padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(31,42,68,0.07); cursor: pointer;
+  display: flex; flex-direction: column; gap: 4px;
+  transition: box-shadow 0.15s;
+}
+.member-card:hover { box-shadow: 0 2px 8px rgba(31,42,68,0.12); }
+.member-card-main { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.member-name { font-weight: 500; font-size: 15px; color: #1F2A44; }
+.member-card-secondary { font-size: 13px; color: #5E6B7A; }
+.member-card-actions { display: flex; justify-content: flex-end; margin-top: 2px; }

@@ -29,7 +29,6 @@ public class GetMembersQueryHandler(
         else
             orgIds = [request.OrganizationId];
 
-        // Members who have an explicit UserOrganizationRole in the viewing org get full contact visibility
         var explicitMemberUserIds = request.IncludeChildOrgs
             ? await db.UserOrganizationRoles
                 .Where(r => r.OrganizationId == request.OrganizationId && r.IsActive)
@@ -44,7 +43,7 @@ public class GetMembersQueryHandler(
             query = query.Where(m =>
                 m.FirstName.Contains(request.Search) ||
                 m.LastName.Contains(request.Search) ||
-                (m.Email != null && m.Email.Contains(request.Search)));
+                m.Emails.Any(e => e.Email.Contains(request.Search)));
 
         if (request.Status.HasValue)
             query = query.Where(m => m.Status == request.Status);
@@ -57,13 +56,15 @@ public class GetMembersQueryHandler(
             .Take(request.PageSize)
             .Select(m => new
             {
-                m.Id, m.FullName, m.Email, m.PhoneNumber, m.Status,
-                m.OrganizationId, m.UserId,
-                m.ShareEmailWithNetwork, m.SharePhoneWithNetwork, m.ShareAddressWithNetwork
+                m.Id, m.FullName, m.Status, m.OrganizationId, m.UserId,
+                m.ShareEmailWithNetwork, m.SharePhoneWithNetwork,
+                PrimaryEmail = m.Emails.Where(e => e.IsPrimary).Select(e => e.Email).FirstOrDefault()
+                            ?? m.Emails.OrderBy(e => e.Id).Select(e => e.Email).FirstOrDefault(),
+                PrimaryPhone = m.Phones.Where(p => p.IsPrimary).Select(p => p.PhoneNumber).FirstOrDefault()
+                            ?? m.Phones.OrderBy(p => p.Id).Select(p => p.PhoneNumber).FirstOrDefault()
             })
             .ToListAsync(cancellationToken);
 
-        // Org names for cross-org display
         Dictionary<int, string> orgNames = [];
         if (request.IncludeChildOrgs)
         {
@@ -74,18 +75,16 @@ public class GetMembersQueryHandler(
 
         var items = raw.Select(m =>
         {
-            var isDirectOrg = m.OrganizationId == request.OrganizationId;
+            var isDirectOrg  = m.OrganizationId == request.OrganizationId;
             var hasExplicitRole = m.UserId != null && explicitMemberUserIds.Contains(m.UserId);
-
-            // Full contact visible if: member is in the viewed org, OR has an explicit role in it
-            var showContact = isDirectOrg || hasExplicitRole;
+            var showContact  = isDirectOrg || hasExplicitRole;
 
             return new MemberSummaryDto(
-                Id: m.Id,
-                FullName: m.FullName,
-                Email: showContact || m.ShareEmailWithNetwork ? m.Email : null,
-                PhoneNumber: showContact || m.SharePhoneWithNetwork ? m.PhoneNumber : null,
-                Status: m.Status,
+                Id:           m.Id,
+                FullName:     m.FullName,
+                PrimaryEmail: showContact || m.ShareEmailWithNetwork ? m.PrimaryEmail : null,
+                PrimaryPhone: showContact || m.SharePhoneWithNetwork ? m.PrimaryPhone : null,
+                Status:       m.Status,
                 OrganizationId: m.OrganizationId,
                 OrgName: request.IncludeChildOrgs && !isDirectOrg
                     ? orgNames.GetValueOrDefault(m.OrganizationId)

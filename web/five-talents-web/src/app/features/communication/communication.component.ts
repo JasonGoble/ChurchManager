@@ -5,6 +5,6 @@ import { CommonModule } from '@angular/common';
   selector: 'app-communication',
   standalone: true,
   imports: [CommonModule],
-  template: `<h1>Communication</h1><p>Coming soon — this feature is scaffolded and ready to implement.</p>`
+  templateUrl: './communication.component.html'
 })
 export class CommunicationComponent {}
