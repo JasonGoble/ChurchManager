@@ -123,6 +123,22 @@ On first run the database is seeded with:
 - An admin user — `admin@FiveTalents.com` / `Admin@1234`
 - Seven default group types (Small Group, Ministry Team, Bible Study, Prayer Group, Youth, Children, Leadership Team)
 
+## Troubleshooting
+
+### Direct URL navigation returns 404
+
+FiveTalents is a Single Page Application. The browser only ever loads `index.html` once; after that Angular's router handles all navigation client-side. If you type a URL directly into the address bar (e.g. `/members/42`) the web server receives a request for a path that doesn't exist as a file, so it returns 404.
+
+The fix is a catch-all rewrite rule that sends every unmatched path to `index.html`:
+
+| Hosting | What to do |
+|---------|------------|
+| **Render static** | `routes` rewrite in `render.yaml` — already configured |
+| **IIS** | `web.config` with URL Rewrite module — included in every build output via `public/web.config` |
+| **Nginx** | Add `try_files $uri $uri/ /index.html;` inside the `location /` block |
+| **Apache** | Add `FallbackResource /index.html` to `.htaccess` |
+| **Local dev** | Angular's dev server handles this automatically — no action needed |
+
 ## Architecture Notes
 
 - **Clean Architecture** — dependency flow is strictly Domain → Application → Infrastructure/API.
