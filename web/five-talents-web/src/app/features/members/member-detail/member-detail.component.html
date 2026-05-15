@@ -81,7 +81,7 @@
     <mat-card>
       <mat-card-header><mat-card-title>Addresses</mat-card-title></mat-card-header>
       <mat-card-content>
-        @if (!m.addresses?.length) {
+        @if (!m.addresses.length) {
           <p class="empty-hint">None on file.</p>
         }
         @for (a of m.addresses; track a.id; let last = $last) {
@@ -136,7 +136,7 @@
               <mat-icon>link</mat-icon> Link User
             </button>
             <button mat-stroked-button color="accent" [disabled]="!m.emails.length" (click)="invite(m)"
-                    [title]="m.emails?.length ? '' : 'Member must have an email address'">
+                    [title]="m.emails.length ? '' : 'Member must have an email address'">
               <mat-icon>email</mat-icon> Send Invite
             </button>
           } @else if (m.isLinkedToUser && isAdmin()) {
