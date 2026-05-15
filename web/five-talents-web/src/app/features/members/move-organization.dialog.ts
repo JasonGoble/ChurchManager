@@ -21,42 +21,7 @@ export interface MoveOrganizationDialogData {
     CommonModule, MatDialogModule, MatButtonModule,
     MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule
   ],
-  template: `
-    <h2 mat-dialog-title>Move to Organization</h2>
-    <div mat-dialog-content style="min-width:400px">
-      <p style="margin:0 0 16px;color:#555;font-size:14px">
-        Moving <strong>{{ data.memberName }}</strong> from
-        <strong>{{ data.currentOrgName ?? 'current organization' }}</strong>.
-      </p>
-
-      @if (loading()) {
-        <div style="display:flex;justify-content:center;padding:24px">
-          <mat-spinner diameter="36" />
-        </div>
-      } @else {
-        <mat-form-field appearance="outline" style="width:100%">
-          <mat-label>New Organization</mat-label>
-          <mat-select [(value)]="selectedOrgId">
-            @for (org of orgs(); track org.id) {
-              <mat-option [value]="org.id" [disabled]="org.id === data.currentOrgId">
-                {{ org.name }}
-                @if (org.id === data.currentOrgId) { <span style="color:#999"> (current)</span> }
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      }
-    </div>
-
-    <div mat-dialog-actions align="end">
-      <button mat-stroked-button mat-dialog-close>Cancel</button>
-      <button mat-raised-button color="primary"
-              [disabled]="!selectedOrgId || selectedOrgId === data.currentOrgId"
-              (click)="confirm()">
-        Move
-      </button>
-    </div>
-  `
+  templateUrl: './move-organization.dialog.html'
 })
 export class MoveOrganizationDialogComponent implements OnInit {
   data = inject<MoveOrganizationDialogData>(MAT_DIALOG_DATA);

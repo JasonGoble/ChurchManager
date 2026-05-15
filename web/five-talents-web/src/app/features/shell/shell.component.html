@@ -1,0 +1,42 @@
+<div class="app-layout">
+
+  <!-- Mobile header -->
+  <header class="mobile-header">
+    <button class="menu-toggle" (click)="sidebarOpen.set(!sidebarOpen())" aria-label="Toggle navigation">
+      <span class="material-icons">{{ sidebarOpen() ? 'close' : 'menu' }}</span>
+    </button>
+    <span class="mobile-logo">FiveTalents</span>
+  </header>
+
+  <!-- Overlay (mobile only) -->
+  <div class="sidebar-overlay" [class.visible]="sidebarOpen()" (click)="sidebarOpen.set(false)"></div>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" [class.open]="sidebarOpen()">
+    <div class="logo">FiveTalents</div>
+    <ul>
+      <li><a routerLink="/dashboard"    routerLinkActive="active" (click)="closeSidebar()">Dashboard</a></li>
+      <li><a routerLink="/members"      routerLinkActive="active" (click)="closeSidebar()">Members</a></li>
+      <li><a routerLink="/groups"       routerLinkActive="active" (click)="closeSidebar()">Groups</a></li>
+      <li><a routerLink="/attendance"   routerLinkActive="active" (click)="closeSidebar()">Attendance</a></li>
+      <li><a routerLink="/giving"       routerLinkActive="active" (click)="closeSidebar()">Giving</a></li>
+      <li><a routerLink="/events"       routerLinkActive="active" (click)="closeSidebar()">Events</a></li>
+      <li><a routerLink="/sermons"      routerLinkActive="active" (click)="closeSidebar()">Sermons</a></li>
+      <li><a routerLink="/volunteers"   routerLinkActive="active" (click)="closeSidebar()">Volunteers</a></li>
+      <li><a routerLink="/communication" routerLinkActive="active" (click)="closeSidebar()">Communication</a></li>
+      <li><a routerLink="/organizations" routerLinkActive="active" (click)="closeSidebar()">Organizations</a></li>
+      <li><a routerLink="/settings"     routerLinkActive="active" (click)="closeSidebar()">Settings</a></li>
+    </ul>
+    <div class="user-info">
+      <a routerLink="/profile" routerLinkActive="active" class="user-name" (click)="closeSidebar()">
+        {{ auth.currentUser()?.fullName }}
+      </a>
+      <button (click)="auth.logout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+
+</div>

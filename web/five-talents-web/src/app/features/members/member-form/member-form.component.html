@@ -1,0 +1,269 @@
+<div class="page-header">
+  <div style="display:flex;align-items:center;gap:8px">
+    <button mat-icon-button routerLink="/members"><mat-icon>arrow_back</mat-icon></button>
+    <h1>{{ isEdit() ? 'Edit Member' : 'Add Member' }}</h1>
+  </div>
+</div>
+
+@if (loading()) {
+  <div style="display:flex;justify-content:center;padding:48px">
+    <mat-spinner diameter="40" />
+  </div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="cards-grid">
+
+      <!-- Personal Information -->
+      <mat-card>
+        <mat-card-header><mat-card-title>Personal Information</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>First Name</mat-label>
+              <input matInput formControlName="firstName" />
+              @if (form.get('firstName')?.hasError('required')) {
+                <mat-error>First name is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Last Name</mat-label>
+              <input matInput formControlName="lastName" />
+              @if (form.get('lastName')?.hasError('required')) {
+                <mat-error>Last name is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Date of Birth</mat-label>
+              <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth"
+                     placeholder="MM/DD/YYYY" autocomplete="bday" />
+              <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
+              <mat-datepicker #dobPicker />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Join Date</mat-label>
+              <input matInput [matDatepicker]="joinPicker" formControlName="joinDate" />
+              <mat-datepicker-toggle matIconSuffix [for]="joinPicker" />
+              <mat-datepicker #joinPicker />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Gender</mat-label>
+              <mat-select formControlName="gender">
+                <mat-option [value]="null">— Select —</mat-option>
+                <mat-option value="Male">Male</mat-option>
+                <mat-option value="Female">Female</mat-option>
+                <mat-option value="Other">Other</mat-option>
+                <mat-option value="PreferNotToSay">Prefer not to say</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Marital Status</mat-label>
+              <mat-select formControlName="maritalStatus">
+                <mat-option [value]="null">— Select —</mat-option>
+                <mat-option value="Single">Single</mat-option>
+                <mat-option value="Married">Married</mat-option>
+                <mat-option value="Divorced">Divorced</mat-option>
+                <mat-option value="Widowed">Widowed</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            @if (isEdit() && isAdmin()) {
+              <mat-form-field appearance="outline">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="status">
+                  <mat-option value="Active">Active</mat-option>
+                  <mat-option value="Inactive">Inactive</mat-option>
+                  <mat-option value="Visitor">Visitor</mat-option>
+                  <mat-option value="Deceased">Deceased</mat-option>
+                </mat-select>
+              </mat-form-field>
+            }
+
+            @if (!isEdit()) {
+              @if (isAdmin()) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Organization</mat-label>
+                  <mat-select formControlName="organizationId">
+                    @for (org of orgs(); track org.id) {
+                      <mat-option [value]="org.id">{{ org.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              } @else {
+                <mat-form-field appearance="outline">
+                  <mat-label>Organization</mat-label>
+                  <input matInput [value]="currentOrgName()" disabled />
+                </mat-form-field>
+              }
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Email Addresses -->
+      <mat-card formArrayName="emails">
+        <mat-card-header>
+          <mat-card-title>Email Addresses</mat-card-title>
+          <div class="card-header-action">
+            <button mat-icon-button type="button" (click)="addEmail()" title="Add email">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          @if (emails.length === 0) {
+            <p class="empty-hint">No email addresses added.</p>
+          }
+          @for (email of emails.controls; track $index; let i = $index) {
+            <div [formGroupName]="i" class="contact-row">
+              <mat-form-field appearance="outline" class="type-field" subscriptSizing="dynamic">
+                <mat-label>Type</mat-label>
+                <mat-select formControlName="contactTypeId">
+                  @for (t of contactTypes()?.emailTypes; track t.id) {
+                    <mat-option [value]="t.id">{{ t.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="value-field">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email" />
+              </mat-form-field>
+              <div class="contact-row-actions">
+                <mat-checkbox formControlName="isPrimary" (change)="setPrimaryEmail(i)">Primary</mat-checkbox>
+                <button mat-icon-button type="button" (click)="removeEmail(i)" title="Remove">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+            @if (i < emails.length - 1) { <mat-divider /> }
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Phone Numbers -->
+      <mat-card formArrayName="phones">
+        <mat-card-header>
+          <mat-card-title>Phone Numbers</mat-card-title>
+          <div class="card-header-action">
+            <button mat-icon-button type="button" (click)="addPhone()" title="Add phone">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          @if (phones.length === 0) {
+            <p class="empty-hint">No phone numbers added.</p>
+          }
+          @for (phone of phones.controls; track $index; let i = $index) {
+            <div [formGroupName]="i" class="contact-row">
+              <mat-form-field appearance="outline" class="type-field" subscriptSizing="dynamic">
+                <mat-label>Type</mat-label>
+                <mat-select formControlName="contactTypeId">
+                  @for (t of contactTypes()?.phoneTypes; track t.id) {
+                    <mat-option [value]="t.id">{{ t.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <ngx-material-intl-tel-input
+                class="value-field"
+                fieldControlName="phoneNumber"
+                appearance="outline"
+                [autoIpLookup]="false"
+                [autoSelectCountry]="true"
+                autoSelectedCountry="us"
+                [numberValidation]="true"
+                [hidePhoneIcon]="true"
+                [textLabels]="phoneTextLabels"
+              />
+              <div class="contact-row-actions">
+                <mat-checkbox formControlName="isMobile">Mobile</mat-checkbox>
+                <mat-checkbox formControlName="isPrimary" (change)="setPrimaryPhone(i)">Primary</mat-checkbox>
+                <button mat-icon-button type="button" (click)="removePhone(i)" title="Remove">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+            @if (i < phones.length - 1) { <mat-divider /> }
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Addresses -->
+      <mat-card style="grid-column:1/-1" formArrayName="addresses">
+        <mat-card-header>
+          <mat-card-title>Addresses</mat-card-title>
+          <div class="card-header-action">
+            <button mat-icon-button type="button" (click)="addAddress()" title="Add address">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          @if (addresses.length === 0) {
+            <p class="empty-hint">No addresses added.</p>
+          }
+          @for (addr of addresses.controls; track $index; let i = $index) {
+            <div [formGroupName]="i">
+              <div class="address-header">
+                <mat-form-field appearance="outline" class="type-field" subscriptSizing="dynamic">
+                  <mat-label>Type</mat-label>
+                  <mat-select formControlName="contactTypeId">
+                    @for (t of contactTypes()?.addressTypes; track t.id) {
+                      <mat-option [value]="t.id">{{ t.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <div class="contact-row-actions">
+                  <mat-checkbox formControlName="isPrimary" (change)="setPrimaryAddress(i)">Primary</mat-checkbox>
+                  <button mat-icon-button type="button" (click)="removeAddress(i)" title="Remove">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <div class="address-fields">
+                <mat-form-field appearance="outline" style="grid-column:1/-1">
+                  <mat-label>Address Line 1</mat-label>
+                  <input matInput formControlName="addressLine1" />
+                </mat-form-field>
+                <mat-form-field appearance="outline" style="grid-column:1/-1">
+                  <mat-label>Address Line 2</mat-label>
+                  <input matInput formControlName="addressLine2" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>City</mat-label>
+                  <input matInput formControlName="city" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>State / Province</mat-label>
+                  <input matInput formControlName="state" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Postal Code</mat-label>
+                  <input matInput formControlName="postalCode" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Country</mat-label>
+                  <input matInput formControlName="country" />
+                </mat-form-field>
+              </div>
+              @if (i < addresses.length - 1) { <mat-divider style="margin:16px 0" /> }
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end">
+      <button mat-stroked-button type="button" routerLink="/members">Cancel</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || saving()">
+        @if (saving()) { <mat-spinner diameter="18" style="display:inline-block;margin-right:8px" /> }
+        {{ isEdit() ? 'Save Changes' : 'Add Member' }}
+      </button>
+    </div>
+  </form>
+}

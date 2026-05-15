@@ -5,6 +5,6 @@ import { CommonModule } from '@angular/common';
   selector: 'app-volunteers',
   standalone: true,
   imports: [CommonModule],
-  template: `<h1>Volunteers</h1><p>Coming soon — this feature is scaffolded and ready to implement.</p>`
+  templateUrl: './volunteers.component.html'
 })
 export class VolunteersComponent {}

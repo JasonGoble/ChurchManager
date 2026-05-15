@@ -5,6 +5,6 @@ import { CommonModule } from '@angular/common';
   selector: 'app-sermons',
   standalone: true,
   imports: [CommonModule],
-  template: `<h1>Sermons</h1><p>Coming soon — this feature is scaffolded and ready to implement.</p>`
+  templateUrl: './sermons.component.html'
 })
 export class SermonsComponent {}

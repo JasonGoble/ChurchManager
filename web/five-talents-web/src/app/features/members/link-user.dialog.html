@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>Link User Account</h2>
+<div mat-dialog-content style="min-width:440px">
+  <p style="margin:0 0 12px;color:#555;font-size:14px">
+    Select a user to link to <strong>{{ data.memberName }}</strong>.
+    @if (data.memberEmail) { Users with a matching email are shown first. }
+  </p>
+
+  <mat-form-field appearance="outline" style="width:100%">
+    <mat-label>Search by name or email</mat-label>
+    <input matInput [value]="filterValue()"
+           (input)="filterValue.set($any($event.target).value)" />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  @if (loading()) {
+    <div style="display:flex;justify-content:center;padding:32px">
+      <mat-spinner diameter="36" />
+    </div>
+  } @else if (filtered().length === 0) {
+    <p style="color:#888;text-align:center;padding:24px 0">
+      {{ filterValue() ? 'No users match your search.' : 'All users are already linked to a member.' }}
+    </p>
+  } @else {
+    <mat-selection-list [multiple]="false" (selectionChange)="onSelect($event)"
+                        style="max-height:320px;overflow-y:auto">
+      @for (user of filtered(); track user.id) {
+        <mat-list-option [value]="user" [selected]="selected()?.id === user.id">
+          <span matListItemTitle>
+            {{ user.fullName }}
+            @if (user.email === data.memberEmail) {
+              <span style="margin-left:8px;font-size:11px;color:#1976d2;font-weight:600">
+                ✓ email match
+              </span>
+            }
+          </span>
+          <span matListItemLine>{{ user.email }}</span>
+        </mat-list-option>
+      }
+    </mat-selection-list>
+  }
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="!selected()" (click)="confirm()">
+    Link
+  </button>
+</div>

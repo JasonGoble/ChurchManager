@@ -26,6 +26,7 @@
     "@ngrx/entity": "^21.1.0",
     "@ngrx/store": "^21.1.0",
     "@ngrx/store-devtools": "^21.1.0",
+    "ngx-material-intl-tel-input": "^21.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

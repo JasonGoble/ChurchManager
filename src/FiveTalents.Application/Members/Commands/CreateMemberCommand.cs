@@ -1,4 +1,5 @@
 using FiveTalents.Application.Common.Interfaces;
+using FiveTalents.Application.Members.DTOs;
 using FiveTalents.Domain.Members;
 using MediatR;
 
@@ -8,17 +9,13 @@ public record CreateMemberCommand(
     int OrganizationId,
     string FirstName,
     string LastName,
-    string? Email,
-    string? PhoneNumber,
     DateTime? DateOfBirth,
     Gender? Gender,
     MaritalStatus? MaritalStatus,
     DateTime? JoinDate,
-    string? Address,
-    string? City,
-    string? State,
-    string? PostalCode,
-    string? Country
+    IReadOnlyList<MemberAddressInput>? Addresses,
+    IReadOnlyList<MemberEmailInput>? Emails,
+    IReadOnlyList<MemberPhoneInput>? Phones
 ) : IRequest<int>;
 
 public class CreateMemberCommandHandler(IApplicationDbContext db) : IRequestHandler<CreateMemberCommand, int>
@@ -28,24 +25,57 @@ public class CreateMemberCommandHandler(IApplicationDbContext db) : IRequestHand
         var member = new Member
         {
             OrganizationId = request.OrganizationId,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
-            DateOfBirth = request.DateOfBirth,
-            Gender = request.Gender,
-            MaritalStatus = request.MaritalStatus,
-            JoinDate = request.JoinDate ?? DateTime.UtcNow,
-            Address = request.Address,
-            City = request.City,
-            State = request.State,
-            PostalCode = request.PostalCode,
-            Country = request.Country,
-            Status = MemberStatus.Active
+            FirstName      = request.FirstName,
+            LastName       = request.LastName,
+            DateOfBirth    = request.DateOfBirth,
+            Gender         = request.Gender,
+            MaritalStatus  = request.MaritalStatus,
+            JoinDate       = request.JoinDate ?? DateTime.UtcNow,
+            Status         = MemberStatus.Active
         };
 
         db.Members.Add(member);
         await db.SaveChangesAsync(cancellationToken);
+
+        ApplyContacts(member.Id, request, db);
+        await db.SaveChangesAsync(cancellationToken);
+
         return member.Id;
+    }
+
+    internal static void ApplyContacts(int memberId, CreateMemberCommand req, IApplicationDbContext db)
+    {
+        foreach (var a in req.Addresses ?? [])
+            db.MemberAddresses.Add(new MemberAddress
+            {
+                MemberId      = memberId,
+                ContactTypeId = a.ContactTypeId,
+                IsPrimary     = a.IsPrimary,
+                AddressLine1  = a.AddressLine1,
+                AddressLine2  = a.AddressLine2,
+                City          = a.City,
+                State         = a.State,
+                PostalCode    = a.PostalCode,
+                Country       = a.Country
+            });
+
+        foreach (var e in req.Emails ?? [])
+            db.MemberEmails.Add(new MemberEmail
+            {
+                MemberId      = memberId,
+                ContactTypeId = e.ContactTypeId,
+                IsPrimary     = e.IsPrimary,
+                Email         = e.Email
+            });
+
+        foreach (var p in req.Phones ?? [])
+            db.MemberPhones.Add(new MemberPhone
+            {
+                MemberId      = memberId,
+                ContactTypeId = p.ContactTypeId,
+                IsPrimary     = p.IsPrimary,
+                PhoneNumber   = p.PhoneNumber,
+                IsMobile      = p.IsMobile
+            });
     }
 }

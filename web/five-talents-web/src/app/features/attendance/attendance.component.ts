@@ -5,6 +5,6 @@ import { CommonModule } from '@angular/common';
   selector: 'app-attendance',
   standalone: true,
   imports: [CommonModule],
-  template: `<h1>Attendance</h1><p>Coming soon — this feature is scaffolded and ready to implement.</p>`
+  templateUrl: './attendance.component.html'
 })
 export class AttendanceComponent {}
