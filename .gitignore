@@ -7,6 +7,7 @@ obj/
 *.swp
 logs/
 *.log
+*.lscache
 
 # Secrets / config overrides
 **/appsettings.Development.json
