@@ -6,6 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "pre-launch: full stack",
+      "postDebugTask": "stop: all",
       "program": "${workspaceFolder}/src/FiveTalents.Api/bin/Debug/net10.0/FiveTalents.Api.dll",
       "args": [],
       "cwd": "${workspaceFolder}/src/FiveTalents.Api",
@@ -15,27 +16,8 @@
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       },
       "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "sourceFileMap": {
-        "/Views": "${workspaceFolder}/Views"
-      }
-    },
-    {
-      "name": "API: Launch (WSL)",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "pre-launch: full stack (WSL)",
-      "program": "${workspaceFolder}/src/FiveTalents.Api/bin/Debug/net10.0/FiveTalents.Api.dll",
-      "args": [],
-      "cwd": "${workspaceFolder}/src/FiveTalents.Api",
-      "stopAtEntry": false,
-      "serverReadyAction": {
-        "action": "openExternally",
-        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-      },
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5290"
       },
       "sourceFileMap": {
         "/Views": "${workspaceFolder}/Views"
@@ -72,16 +54,6 @@
         "hidden": false,
         "group": "",
         "order": 1
-      }
-    },
-    {
-      "name": "Full Stack (WSL)",
-      "configurations": ["API: Launch (WSL)", "Angular: Serve + Chrome"],
-      "stopAll": true,
-      "presentation": {
-        "hidden": false,
-        "group": "",
-        "order": 2
       }
     }
   ]

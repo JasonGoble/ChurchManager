@@ -52,20 +52,28 @@ FiveTalents/
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Node.js 22+ / npm 11+](https://nodejs.org)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) — runs PostgreSQL and Mailpit
+- [PostgreSQL 16+](https://www.postgresql.org/download/) — runs as a native OS service
+- [Mailpit](https://github.com/axllent/mailpit/releases/latest) — local email capture for development only; production uses a real SMTP server
 - [Angular CLI](https://angular.io/cli) — `npm install -g @angular/cli`
 
 ## Getting Started
 
-### 1. Start backing services (database + email)
+### 1. Create the database
 
-```powershell
-docker compose up db mailpit -d --wait
+With PostgreSQL running, create the application database:
+
+```sql
+CREATE DATABASE "FiveTalents" OWNER postgres;
 ```
 
-This starts PostgreSQL (port 5433) and Mailpit (port 1025 / UI at `http://localhost:8025`). Migrations and seed data are applied automatically on first API startup.
+Then apply migrations:
 
-> **Note:** Port 5433 is used instead of 5432 to avoid conflicts with any locally installed PostgreSQL.
+```powershell
+$ef = "$env:USERPROFILE\.dotnet\tools\dotnet-ef.exe"
+& $ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
+```
+
+> **Note:** `appsettings.Development.json` (gitignored) can override the connection string for machine-local settings. The base `appsettings.json` connects to `localhost:5432` with username/password `postgres`.
 
 ### 2. JWT Secret
 
@@ -96,7 +104,7 @@ npm start
 
 ### VS Code (recommended)
 
-Press **F5** (or select **Full Stack** from the Run & Debug panel). VS Code will start Docker services, build the API, and launch both servers with Chrome and .NET debuggers attached.
+Press **F5** (or select **Full Stack** from the Run & Debug panel). VS Code will start Mailpit, build the API, and launch both servers with Chrome and .NET debuggers attached. PostgreSQL must already be running as a native service. Mailpit and Angular are stopped automatically when the debug session ends.
 
 For production, set real SMTP credentials in `appsettings.json`:
 

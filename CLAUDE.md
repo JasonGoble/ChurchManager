@@ -11,8 +11,10 @@ Project conventions and technical gotchas for AI-assisted development on this re
 
 ## Running Locally
 
+Local dev uses native Windows services — PostgreSQL 18 (Windows service, auto-start) and Mailpit (binary on PATH). The VS Code "Full Stack" launch config starts Mailpit and the API together; Angular is started via "Angular: Serve + Chrome" or the "Full Stack" compound.
+
 ```powershell
-# Migrations (dotnet-ef is not on PATH — invoke via $env:USERPROFILE)
+# Migrations (dotnet-ef global tool)
 $ef = "$env:USERPROFILE\.dotnet\tools\dotnet-ef.exe"
 & $ef migrations add <Name> --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
 & $ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
@@ -23,9 +25,12 @@ dotnet run --project src/FiveTalents.Api   # http://localhost:5290
 # Frontend
 cd web/five-talents-web && npm start       # http://localhost:4200
 
-# Email (dev) — start Mailpit before the API
-mailpit                                       # UI at http://localhost:8025
+# Email (dev) — the pre-launch task starts this automatically, or run manually
+mailpit                                    # UI at http://localhost:8025
 ```
+
+> **Note:** `appsettings.Development.json` is gitignored and holds any machine-local overrides (e.g. connection string). The base `appsettings.json` uses `localhost:5432`.
+> Docker (`docker-compose.yml`) is used only for Render deployment, not local dev.
 
 ## Branching & GitHub Workflow
 
