@@ -52,28 +52,69 @@ FiveTalents/
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Node.js 22+ / npm 11+](https://nodejs.org)
-- [PostgreSQL 16+](https://www.postgresql.org/download/) — runs as a native OS service
-- [Mailpit](https://github.com/axllent/mailpit/releases/latest) — local email capture for development only; production uses a real SMTP server
 - [Angular CLI](https://angular.io/cli) — `npm install -g @angular/cli`
+- [dotnet-ef](https://learn.microsoft.com/en-us/ef/core/cli/dotnet) — `dotnet tool install --global dotnet-ef`
+
+Plus **one** of the two backing-service tracks below.
 
 ## Getting Started
 
-### 1. Create the database
+Choose the track that fits your environment. Both share the same API and frontend steps that follow.
 
-With PostgreSQL running, create the application database:
+---
+
+### Track A — Native services (Windows Server 2025)
+
+Required on Windows Server 2025, where WSL2 Docker networking is unsupported, and linux containers are barely tolerated.
+
+**Install:**
+- [PostgreSQL 16+](https://www.postgresql.org/download/) — install as a Windows service (auto-starts on boot); use port 5432 with username/password `postgres`
+- [Mailpit](https://github.com/axllent/mailpit/releases/latest) — single binary, add to PATH; used for local email capture only (production uses a real SMTP server)
+
+**Create the database** (pgAdmin or psql):
 
 ```sql
 CREATE DATABASE "FiveTalents" OWNER postgres;
 ```
 
-Then apply migrations:
+The base `appsettings.json` connects to `localhost:5432`. Override per-machine via the gitignored `appsettings.Development.json` if your local settings differ:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=FiveTalents;Username=postgres;Password=postgres"
+  }
+}
+```
+
+---
+
+### Track B — Docker (Windows 11, macOS, Linux)
+
+Requires [Docker Desktop](https://docs.docker.com/get-docker/) with Compose. Start only the backing services — the API and Angular app still run natively.
+
+```bash
+docker compose up db mailpit -d --wait
+```
+
+This starts PostgreSQL on port **5433** and Mailpit on port **1025** (UI at `http://localhost:8025`).
+
+> **Self-hosting / full-stack Docker:** `docker-compose.yml` also defines `api` and `web` services if you want to run the entire stack in containers (e.g. on your own server). Run `docker compose up` to start all four services; the API will be on port 5000 and the frontend on port 4200. This is separate from the Render deployment, which uses `render.yaml` with individual Dockerfiles.
+
+---
+
+### 1. Apply migrations
 
 ```powershell
+# Windows (PowerShell)
 $ef = "$env:USERPROFILE\.dotnet\tools\dotnet-ef.exe"
 & $ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
 ```
 
-> **Note:** `appsettings.Development.json` (gitignored) can override the connection string for machine-local settings. The base `appsettings.json` connects to `localhost:5432` with username/password `postgres`.
+```bash
+# macOS / Linux
+dotnet-ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
+```
 
 ### 2. JWT Secret
 
@@ -87,7 +128,7 @@ Replace the placeholder secret in `src/FiveTalents.Api/appsettings.json` with a 
 
 ### 3. Start the API
 
-```powershell
+```bash
 dotnet run --project src/FiveTalents.Api
 # Listening on http://localhost:5290
 # OpenAPI docs: http://localhost:5290/openapi/v1.json
@@ -95,7 +136,7 @@ dotnet run --project src/FiveTalents.Api
 
 ### 4. Start the Frontend
 
-```powershell
+```bash
 cd web/five-talents-web
 npm install
 npm start
@@ -104,7 +145,10 @@ npm start
 
 ### VS Code (recommended)
 
-Press **F5** (or select **Full Stack** from the Run & Debug panel). VS Code will start Mailpit, build the API, and launch both servers with Chrome and .NET debuggers attached. PostgreSQL must already be running as a native service. Mailpit and Angular are stopped automatically when the debug session ends.
+Press **F5** (or select **Full Stack** from the Run & Debug panel). VS Code will start Mailpit, build the API, and launch both servers with Chrome and .NET debuggers attached. Mailpit and Angular are stopped automatically when the debug session ends.
+
+- **Track A:** PostgreSQL is already running as a service — just press F5.
+- **Track B:** Run `docker compose up db mailpit -d --wait` first, then press F5.
 
 For production, set real SMTP credentials in `appsettings.json`:
 
@@ -119,16 +163,12 @@ For production, set real SMTP credentials in `appsettings.json`:
 }
 ```
 
-### VS Code (Full Stack)
-
-Open the workspace and press **F5** (or select **Full Stack** from the Run & Debug panel) to build the API, start Mailpit, and launch both servers with a Chrome debugger attached.
-
 ## Default Seed Data
 
 On first run the database is seeded with:
 
 - A root organization (*My Church*)
-- An admin user — `admin@FiveTalents.com` / `Admin@1234`
+- An admin user — `admin@FiveTalents.com` / `Admin@1234!`
 - Seven default group types (Small Group, Ministry Team, Bible Study, Prayer Group, Youth, Children, Leadership Team)
 
 ## Troubleshooting
